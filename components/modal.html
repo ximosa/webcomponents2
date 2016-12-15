@@ -1,0 +1,122 @@
+<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+
+<dom-module id="cms-modal">
+<template>
+  <style>
+    :host {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1050;
+      display: none;
+      overflow: hidden;
+      outline: 0;
+    }
+
+    :host.open {
+      display: block !important;
+    }
+
+    :host .modal {
+      position: relative;
+      width: auto;
+      max-width: 600px;
+      margin: 30px auto;
+    }
+
+    :host .modal-content {
+      position: relative;
+      background-color: #fff;
+      -webkit-background-clip: padding-box;
+      background-clip: padding-box;
+      border: 1px solid rgba(0,0,0,.2);
+      border-radius: .3rem;
+      outline: 0;
+    }
+    :host ::content main {
+      position: relative;
+      padding: 15px;
+    }
+
+    :host ::content header {
+      padding: 15px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    :host ::content footer {
+      padding: 15px;
+      text-align: right;
+      border-top: 1px solid #e5e5e5;
+    }
+  </style>
+
+  <aside class="modal">
+    <div class="modal-content">
+      <content></content>
+    </div>
+  </aside>
+</template>
+
+<script>
+    Polymer({
+      is: "cms-modal",
+      properties: {
+        backdrop: Boolean,
+        allowScroll: Boolean,
+        isOpen: Boolean
+      },
+      open: function() {
+        if (this.backdrop && !document.querySelector('#modal-backdrop')) {
+          var bdelem = document.createElement('div');
+          bdelem.id = 'modal-backdrop';
+          var styles = {
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            'z-index': 1040,
+            'background-color': '#000',
+            opacity: .5
+          };
+
+          for(var key in styles) bdelem.style[key] = styles[key];
+
+          document.body.appendChild(bdelem);
+        }
+
+        this.root.host.classList.add('open');
+        this.fire('open');
+      },
+      close: function() {
+        if (this.backdrop) {
+          document.querySelector('#modal-backdrop').remove();
+        }
+        
+        this.root.host.classList.remove('open');
+        this.fire('close');
+      },
+      toogle: function() {
+        if(this.isOpen) this.close();
+        else this.open();
+        
+        this.isOpen = !this.isOpen;
+      },
+      ready: function () {
+        if(this.isOpen) {
+          this.open();
+        }
+        
+        var self = this;
+        this.getContentChildren('content').forEach(content => 
+          content.querySelectorAll('.modal-close').forEach(e => 
+            e.addEventListener('click', function() {
+              self.close();
+            }))
+        );
+      }
+    });
+  </script>
+</dom-module>
