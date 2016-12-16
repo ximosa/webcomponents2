@@ -1,0 +1,95 @@
+<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+
+<dom-module id="table-fa-icons">
+    <template>
+        <style>
+            :host td {
+                padding: 8px 16px;
+            }
+        </style>
+        <table class="table-fa-icons">
+            <tbody>
+                <template is="dom-repeat" items="{{icons}}" as="row">
+                    <tr>
+                        <template is="dom-repeat" items="{{row}}" as="icon">
+                            <td><i class$="{{baseClass}} {{icon}}"></i></td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+
+    <script>
+    Polymer({
+        is: "table-fa-icons",
+        properties: {
+            iconSize: {
+                type: String
+            },
+            cols: {
+                type: Number,
+                value: 5
+            }
+        },
+        indexOfStyle: function() {
+            for (var i = 0; i < document.styleSheets.length; i++)
+                if(document.styleSheets[i].href && document.styleSheets[i].href.indexOf('font-awesome.') >= 0) return i;
+        },
+        importStyle: function(callback) {
+            var self = this;
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/node_modules/font-awesome/css/font-awesome.min.css';
+            link.addEventListener('load', function() {
+                callback.call(self, this.sheet.rules || this.sheet.cssRules);
+            });          
+            
+            document.head.appendChild(link);
+        },
+        getStyleRules: function(callback) {
+            callback = callback || function() {};
+            var i = this.indexOfStyle();
+            if(i >= 0) callback.call(this, document.styleSheets[i].rules || document.styleSheets[i].cssRules);
+            else this.importStyle(callback);
+        },
+        ready: function () {
+            this.baseClass = 'fa ';
+            switch(this.iconSize) {
+                case 'large': 
+                    this.baseClass += 'fa-lg';
+                    break;
+                case '2x': 
+                    this.baseClass += 'fa-2x';
+                    break;
+                case '3x': 
+                    this.baseClass += 'fa-3x';
+                    break;
+                case '4x': 
+                    this.baseClass += 'fa-4x';
+                    break;
+                case '5x': 
+                    this.baseClass += 'fa-5x';
+                    break;
+            }
+
+
+            this.icons = [];
+            this.getStyleRules(function(rules) {
+                var i = 0, row = [];
+                for(var key in rules) {
+                    if(rules[key].style && rules[key].style.content) {
+                        row.push(rules[key].selectorText.match(/.([a-zA-z\-]*)::/)[1]);
+                    
+                        if(i++ == this.cols) {
+                            this.push('icons', row);
+                            row = [];
+                            i = 0;
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+</dom-module>
