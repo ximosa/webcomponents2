@@ -42,3 +42,12 @@ h4 {
     display: block;
     float: right;
 }
+
+.wc-tooltip {
+    background-color: #ccc;
+}
+
+.container {
+    width: 100%;
+    padding: 30px;
+}

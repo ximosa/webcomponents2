@@ -1,0 +1,101 @@
+<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+
+<dom-module id="wc-tooltip">
+<template>
+    <content id='text'></content>
+</template>
+
+<script>
+    Polymer({
+        is: "wc-tooltip",
+        properties: {
+            dir: {
+                type: String,
+                value: "left"
+            },
+            target: String
+        },
+        bindStyles: function (elem, styles) {
+            for (var key in styles) elem.style[key] = styles[key];
+        },
+        create: function() {
+            this.elem = document.createElement('wc-tooltip-element');
+            this.elem.classList.add("wc-tooltip");
+            document.body.appendChild(this.elem);
+        },
+        getPosition: function() {
+            var contentRect = document.querySelector(this.target).getBoundingClientRect();
+            
+            this.elem.style.display = 'block';
+            var elemRect = this.elem.getBoundingClientRect();
+            
+            return {
+                top: `${contentRect.top - elemRect.height}px`,
+                left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+            };
+        },
+        show: function() {
+            var styles = this.getPosition();
+            this.bindStyles(this.elem, styles);
+            this.elem.classList.add('in');
+        },
+        hide: function() {
+            var styles = this.getPosition();
+            this.bindStyles(this.elem, styles);
+            this.elem.classList.remove('in');
+        },
+        ready: function () {
+            var self = this;
+            console.log(this.getContentChildren('#text'));
+            //self.create();
+            //this.getContentChildren('#text').forEach(content => {
+                //self.elem.innerText = content.innerText;
+                //content.innerText = "";
+            //});
+
+            /*var content = document.querySelector(this.target);
+            content.addEventListener('mouseenter', function () {
+                self.show();
+            });
+            content.addEventListener('mouseout', function () {
+                self.hide();
+            });*/
+        }
+    });
+</script>
+</dom-module>
+
+<dom-module id="wc-tooltip-element">
+<template>
+    <style>
+        :host {
+            position: absolute;
+            padding: 5px;
+            display: none;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        :host.in {
+            opacity: 1;
+            display: block;
+            visibility: visible;
+            transition: opacity .3s ease-in-out;
+        }
+    </style>
+
+    <aside>
+        <content></content>
+    </aside>
+</template>
+
+<script>
+    Polymer({
+        is: "wc-tooltip-element",
+        parameters: {
+        },
+        ready: function () {
+        }
+    });
+</script>
+</dom-module>

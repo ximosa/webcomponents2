@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <link rel="stylesheet" href="assets/css/reset.css">
     <link rel="stylesheet" href="assets/css/theme.css">
 
     <script src="https://polygit2.appspot.com/components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="components/tooltip.html">
     <link rel="import" href="components/modal.html">
     <link rel="import" href="components/table-fa-icons.html">
-  </head>
-  
-  <body>
-    <a class='open-modal' href="#m1">Abrir modal</a>
-    <cms-modal id="m1" backdrop allow-scroll>
+</head>
+
+<body>
+    <main class="container">
+        <p>
+            <wc-tooltip target="#t1" dir="top">Tooltip top</wc-tooltip>
+            <a id="t1" href="javascript:;">Tootip top</a>
+        </p>
+        <p><a class='open-modal' href="#m1">Abrir modal</a></p>
+    </main>
+    <wc-modal id="m1" backdrop allow-scroll>
         <header>
             <a href="#" class="pull-right modal-close">x</a>
             <h3>Modal Header</h3>
@@ -23,20 +31,21 @@
             <button class="btn btn-confirm" type="button">Confirmar</button>
             <button class="btn btn-cancel modal-close" type="button">Cancelar</button>
         </footer>
-    </cms-modal>
+    </wc-modal>
 
     <script>
-        window.addEventListener('load', function() {
-            if(window.location.hash)
-                document.querySelector(`cms-modal[id=${window.location.hash.substring(1)}]`).open();
+        window.addEventListener('load', function () {
+            if (window.location.hash)
+                document.querySelector(`wc-modal[id=${window.location.hash.substring(1)}]`).open();
 
-            document.querySelectorAll('.open-modal').forEach(e => 
-                e.addEventListener('click', function() { 
-                    let modal = document.querySelector(`cms-modal[id=${e.hash.substring(1)}]`);
+            document.querySelectorAll('.open-modal').forEach(e =>
+                e.addEventListener('click', function () {
+                    let modal = document.querySelector(`wc-modal[id=${e.hash.substring(1)}]`);
                     modal.addEventListener('close', () => window.location.hash = '');
-                    modal.open(); 
+                    modal.open();
                 }));
         });
     </script>
-  </body>
+</body>
+
 </html>
