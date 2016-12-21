@@ -1,38 +1,59 @@
 <link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
 
-<dom-module id="wc-tooltip">
+<dom-module id="elem-wctooltip">
 <template>
-    <content id='text'></content>
+    <content></content>
 </template>
 
 <script>
-    Polymer({
-        is: "wc-tooltip",
+    var options = {
         properties: {
-            dir: {
-                type: String,
-                value: "left"
-            },
-            target: String
+            title: String,
+            dir: String,
         },
         bindStyles: function (elem, styles) {
             for (var key in styles) elem.style[key] = styles[key];
         },
         create: function() {
-            this.elem = document.createElement('wc-tooltip-element');
+            this.elem = document.createElement('wc-tooltip');
             this.elem.classList.add("wc-tooltip");
             document.body.appendChild(this.elem);
         },
         getPosition: function() {
-            var contentRect = document.querySelector(this.target).getBoundingClientRect();
+            var contentRect = this.getBoundingClientRect();
             
             this.elem.style.display = 'block';
             var elemRect = this.elem.getBoundingClientRect();
             
-            return {
-                top: `${contentRect.top - elemRect.height}px`,
-                left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+            var position = {};
+            switch(this.dir || this.getAttribute("dir")) {
+                case "top":
+                    position = { 
+                        top: `${contentRect.top - elemRect.height}px`,
+                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                    }
+                    break;
+                case "bottom":
+                    position = { 
+                        top: `${contentRect.top + elemRect.height}px`,
+                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                    }
+                    break;
+                case "left":
+                    position = { 
+                        top: `${contentRect.top}px`,
+                        left: `${(contentRect.left - elemRect.width)}px`
+                    }
+                    break;
+                case "right":
+                    position = { 
+                        top: `${contentRect.top}px`,
+                        left: `${(contentRect.left + contentRect.width)}px`
+                    }
+                    break;
             };
+
+            return position;
         },
         show: function() {
             var styles = this.getPosition();
@@ -46,26 +67,33 @@
         },
         ready: function () {
             var self = this;
-            console.log(this.getContentChildren('#text'));
-            //self.create();
-            //this.getContentChildren('#text').forEach(content => {
-                //self.elem.innerText = content.innerText;
-                //content.innerText = "";
-            //});
+            self.create();
+            self.elem.innerText = this.title;
 
-            /*var content = document.querySelector(this.target);
-            content.addEventListener('mouseenter', function () {
+            this.addEventListener('mouseenter', function () {
                 self.show();
             });
-            content.addEventListener('mouseout', function () {
+            this.addEventListener('mouseout', function () {
                 self.hide();
-            });*/
+            });
         }
-    });
+    };
+
+    function createTooltip(is, exts) {
+        var opts = Object.assign({}, options);
+        opts.is = is;
+        opts.extends = exts;
+        Polymer(opts);
+    }
+
+    createTooltip('a-wctooltip', 'a');
+    createTooltip('button-wctooltip', 'button');
+    createTooltip('input-wctooltip', 'input');
+    createTooltip('div-wctooltip', 'div');
 </script>
 </dom-module>
 
-<dom-module id="wc-tooltip-element">
+<dom-module id="wc-tooltip">
 <template>
     <style>
         :host {
@@ -91,7 +119,7 @@
 
 <script>
     Polymer({
-        is: "wc-tooltip-element",
+        is: "wc-tooltip",
         parameters: {
         },
         ready: function () {

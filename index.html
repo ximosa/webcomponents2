@@ -13,10 +13,16 @@
 
 <body>
     <main class="container">
-        <p>
-            <wc-tooltip target="#t1" dir="top">Tooltip top</wc-tooltip>
-            <a id="t1" href="javascript:;">Tootip top</a>
-        </p>
+        <div>
+            <a is="a-wctooltip" dir="top" title="Tooltip top" href="javascript:;">Tootip top</a> | 
+            <a is="a-wctooltip" dir="right" title="Tooltip right" href="javascript:;">Tootip right</a> | 
+            <a is="a-wctooltip" dir="left" title="Tooltip left" href="javascript:;">Tootip left</a> | 
+            <a is="a-wctooltip" dir="bottom" title="Tooltip bottom" href="javascript:;">Tootip bottom</a>
+        </div>
+        <div>
+            <input type="text" is="input-wctooltip" dir="top" title="Tooltip top" placeholder="Input" />
+            <button is="button-wctooltip" dir="right" title="Tooltip right" >Button</button>
+        </div>
         <p><a class='open-modal' href="#m1">Abrir modal</a></p>
     </main>
     <wc-modal id="m1" backdrop allow-scroll>
