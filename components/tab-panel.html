@@ -1,0 +1,49 @@
+<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+
+<dom-module id="wc-tabpanel">
+    <template>
+    <style>
+    </style>
+
+    <div class="wc-tabpanel">
+        <content></content>
+    </div>
+</template>
+
+<script>
+    Polymer({
+        is: "wc-tabpanel",
+        properties: {
+        },
+        ready: function () {
+            var self = this;
+            this.getContentChildren('content').forEach(content =>
+                content.style.display = 'none'
+            );
+        }
+    });
+</script>
+</dom-module>
+
+<dom-module id="wc-tab">
+    <template>
+    <style>
+    </style>
+
+    <section class="wc-tab">
+        <content></content>
+    </section>
+</template>
+
+<script>
+    Polymer({
+        is: "wc-tab",
+        properties: {
+        },
+        ready: function () {
+            var self = this;
+            
+        }
+    });
+</script>
+</dom-module>

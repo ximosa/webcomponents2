@@ -2,6 +2,15 @@
 
 <dom-module id="wc-popover">
 <template>
+    <style>
+        :host {
+            position: absolute;
+            right: 0;
+            display: none;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
     <content></content>
 </template>
 
@@ -9,7 +18,7 @@
     Polymer({
         is: 'wc-popover',
         properties: {
-            title: String,
+            target: String,
             dir: String,
         },
         bindStyles: function (elem, styles) {
@@ -17,11 +26,11 @@
         },
         create: function() {
             this.elem = document.createElement('wc-popover-box');
-            this.elem.classList.add("wc-popover-box");
+            this.elem.classList.add("wc-popover");
             document.body.appendChild(this.elem);
         },
         getPosition: function() {
-            var contentRect = this.getBoundingClientRect();
+            var contentRect = this.targetElem.getBoundingClientRect();
             
             this.elem.style.display = 'block';
             var elemRect = this.elem.getBoundingClientRect();
@@ -69,12 +78,16 @@
         ready: function () {
             var self = this;
             self.create();
-            self.elem.innerText = this.title;
+            this.targetElem = document.querySelector(this.target);
 
-            this.addEventListener('mouseenter', function () {
+            this.getContentChildren('content').forEach(content => {
+                self.elem.appendChild(content);
+            });
+
+            this.targetElem.addEventListener('mouseenter', function () {
                 self.show();
             });
-            this.addEventListener('mouseout', function () {
+            this.targetElem.addEventListener('mouseout', function () {
                 self.hide();
             });
         }

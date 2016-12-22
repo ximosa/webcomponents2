@@ -6,24 +6,77 @@
     <link rel="stylesheet" href="assets/css/theme.css">
 
     <script src="https://polygit2.appspot.com/components/webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="components/tooltip.html">
     <link rel="import" href="components/modal.html">
+    <link rel="import" href="components/tooltip.html">
+    <link rel="import" href="components/popover.html">
+    <link rel="import" href="components/tab-panel.html">
     <link rel="import" href="components/table-fa-icons.html">
 </head>
 
 <body>
     <main class="container">
-        <div>
+        <p class="line"><a class='open-modal' href="#m1">Abrir modal</a></p>
+        <div class="line">
             <a is="a-wctooltip" dir="top" title="Tooltip top" href="javascript:;">Tootip top</a> | 
             <a is="a-wctooltip" dir="right" title="Tooltip right" href="javascript:;">Tootip right</a> | 
             <a is="a-wctooltip" dir="left" title="Tooltip left" href="javascript:;">Tootip left</a> | 
             <a is="a-wctooltip" dir="bottom" title="Tooltip bottom" href="javascript:;">Tootip bottom</a>
         </div>
-        <div>
+        <div class="line">
             <input type="text" is="input-wctooltip" dir="top" title="Tooltip top" placeholder="Input" />
             <button is="button-wctooltip" dir="right" title="Tooltip right" >Button</button>
         </div>
-        <p><a class='open-modal' href="#m1">Abrir modal</a></p>
+        <div class="line">
+            <a id="p1" href="javascript:;">Popover top</a> | 
+            <a id="p2" href="javascript:;">Popover right</a> | 
+            <a id="p3" href="javascript:;">Popover left</a> | 
+            <a id="p4" href="javascript:;">Popover bottom</a>
+            <wc-popover target="#p1" dir="top">
+                <h3>Popover top</h3>
+                <p>Um propover directed to top</p>
+            </wc-popover>
+            <wc-popover target="#p2" dir="right">
+                <h3>Popover right</h3>
+                <p>Um propover directed to right</p>
+            </wc-popover>
+            <wc-popover target="#p3" dir="left">
+                <h3>Popover left</h3>
+                <p>Um propover directed to left</p>
+            </wc-popover>
+            <wc-popover target="#p4" dir="bottom">
+                <h3>Popover bottom</h3>
+                <p>Um propover directed to bottom</p>
+            </wc-popover>
+        </div>
+        <wc-tabpanel>
+            <wc-tab active>
+                <header>
+                    Tab 1
+                </header>
+                <main>
+                    <h2>Tab 1</h2>
+                    <p>Content of tab panel</p>
+                </main>
+            </wc-tab>
+            <wc-tab>
+                <header>
+                    Tab 2
+                </header>
+                <main>
+                    <h2>Tab 2</h2>
+                    <p>Content of tab panel</p>
+                </main>
+            </wc-tab>
+            <wc-tab>
+                <header>
+                    Tab 3
+                </header>
+                <main>
+                    <h2>Tab 3</h2>
+                    <p>Content of tab panel</p>
+                </main>
+            </wc-tab>
+        </wc-tabpanel>
     </main>
     <wc-modal id="m1" backdrop allow-scroll>
         <header>

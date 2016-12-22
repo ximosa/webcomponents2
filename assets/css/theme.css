@@ -47,7 +47,16 @@ h4 {
     background-color: #ccc;
 }
 
+.wc-popover {
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
 .container {
     width: 100%;
     padding: 30px;
+}
+
+.line {
+    padding: 5px 10px;
 }
