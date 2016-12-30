@@ -1,0 +1,158 @@
+
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="wc-carousel">
+    <template>
+
+        <!-- Styles MUST be inside template -->
+        <style>
+
+      :host {
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      div > ::slotted(:not([selected])) {
+        display: none;
+      }
+
+      button {
+        position: absolute;
+        top: calc(50% - 20px);
+        padding: 0;
+        line-height: 40px;
+        border: none;
+        background: none;
+        color: #DDD;
+        font-size: 40px;
+        font-weight: bold;
+        opacity: 0.7;
+        cursor: pointer;
+      }
+
+      button:hover,
+      button:focus {
+        opacity: 1;
+        outline: none;
+      }
+
+      #prevBtn {
+        left: 12px;
+      }
+
+      #nextBtn {
+        right: 12px;
+      }
+
+      button[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
+    </style>
+
+<div>
+    <slot></slot>
+</div>
+<button id="prevBtn" on-click="previous">❮</button>
+<button id="nextBtn" on-click="next">❯</button>
+
+</template>
+
+<script>
+
+    // Extend Polymer.Element base class
+    class WcCarousel extends MyMixin(Polymer.Element) {
+
+        static get is() { return 'wc-carousel' }
+
+        static get config() {
+            // properties, observers meta data
+            return {
+                properties: {
+                    selected: {
+                        type: Object,
+                        observer: '_selectedChanged'
+                    },
+                    loop: {
+                        type: Boolean
+                    },
+                    auto: {
+                        type: Boolean,
+                        observer: '_autoChanged'
+                    },
+                    interval: {
+                        type: Number
+                    },
+                    direction: {
+                        type: String,
+                        value: "right"
+                    }
+                }
+            };
+        }
+
+        connectedCallback() {
+            super.connectedCallback();
+            this._resetInterval();
+        }
+
+        previous() {
+            super.previous();
+            this._resetInterval();
+        }
+
+        next() {
+            super.next();
+            this._resetInterval();
+        }
+
+        _selectedChanged(selected, oldSelected) {
+            super._selectedChanged(selected, oldSelected);
+
+            if (!this.loop) {
+                this.$.prevBtn.disabled = !selected.previousElementSibling;
+                this.$.nextBtn.disabled = !selected.nextElementSibling;
+            }
+        }
+
+        _autoChanged(auto) {
+            if (auto) this._resetInterval();
+            else if (this.fninterval) {
+                clearInterval(this.fninterval);
+                delete this.fninterval;
+            }
+        }
+
+        _resetInterval() {
+            if (this.fninterval) {
+                clearInterval(this.fninterval);
+                delete this.fninterval;
+            }
+
+            this.fninterval = setInterval(() => {
+                if (this.direction == "right") this.next();
+                else this.previous();
+            }, this.interval);
+        }
+
+        _touchstart(event) {
+            if (this.fninterval) {
+                clearInterval(this.fninterval);
+                delete this.fninterval;
+            }
+
+            super._touchstart(event);
+        }
+
+        _touchend(event) {
+            this._resetInterval();
+            super._touchend(event);
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcCarousel.is, WcCarousel);
+
+</script>
+</dom-module>

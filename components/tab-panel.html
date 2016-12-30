@@ -17,9 +17,8 @@
         },
         ready: function () {
             var self = this;
-            this.getContentChildren('content').forEach(content =>
-                content.style.display = 'none'
-            );
+            
+            
         }
     });
 </script>
@@ -28,21 +27,43 @@
 <dom-module id="wc-tab">
     <template>
     <style>
+        ::content > main{
+            display: none;
+        }
+
+        ::content main.active {
+            display: block;
+        }
     </style>
 
-    <section class="wc-tab">
-        <content></content>
-    </section>
+    <content></content>
 </template>
 
 <script>
     Polymer({
         is: "wc-tab",
         properties: {
+            active: Boolean
+        },
+        activate: function() {
+            this.querySelector('main'). classList.add('active');
+        },
+        deactivate: function() {
+            this.querySelector('main'). classList.remove('active');
+        },
+        toggle: function() {
+            if(this.active)
+                this.deactivate();
+            else
+                this.activate();
+            this.active = !this.active;
         },
         ready: function () {
             var self = this;
-            
+            if(this.active) this.activate();
+            else this.deactivate();
+
+            this.querySelector('header').addEventListener('click', e => document.querySelectorAll('wc-tab').forEach(tab => tab.deactivate()));
         }
     });
 </script>

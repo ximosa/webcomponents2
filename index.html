@@ -2,34 +2,251 @@
 <html lang="en">
 
 <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,600,300italic,600italic" rel="stylesheet" type="text/css">
+
     <link rel="stylesheet" href="assets/css/reset.css">
     <link rel="stylesheet" href="assets/css/theme.css">
 
-    <script src="https://polygit2.appspot.com/components/webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="components/modal.html">
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <!--<link rel="import" href="components/modal.html">
     <link rel="import" href="components/tooltip.html">
     <link rel="import" href="components/popover.html">
-    <link rel="import" href="components/tab-panel.html">
-    <link rel="import" href="components/table-fa-icons.html">
+    <link rel="import" href="components/tab-panel.html">-->
+    <script>
+
+    const MyMixin = subclass => class extends subclass {
+
+        connectedCallback() {
+            super.connectedCallback();
+            this.selected = this.firstElementChild;
+            requestAnimationFrame(this._installListeners.bind(this));
+        }
+
+        previous() {
+            this.moving = "prev";
+            const elem = this.selected.previousElementSibling;
+            if (elem && !this._touchDir) this.selected = elem;
+            else if (this.loop && !this._touchDir) this.selected = this.lastElementChild;
+        }
+
+        next() {
+            this.moving = "next";
+            const elem = this.selected.nextElementSibling;
+            if (elem && !this._touchDir) this.selected = elem;
+            else if (this.loop && !this._touchDir) this.selected = this.firstElementChild;
+        }
+
+        _selectedChanged(selected, oldSelected) {
+            if (selected && oldSelected) {
+                if (this.moving == "prev")
+                    this._leftTransition(selected, oldSelected);
+                else if (this.moving == "next")
+                    this._rightTransition(selected, oldSelected);
+            }
+
+            if (oldSelected) oldSelected.removeAttribute('selected');
+            if (selected) selected.setAttribute('selected', '');
+
+            let prevChild = this.selected.previousElementSibling;
+            let nextChild = this.selected.nextElementSibling;
+
+            if (this.loop) {
+                if (!prevChild) prevChild = this.lastElementChild;
+                if (!nextChild) nextChild = this.firstElementChild;
+            }
+
+            this._loadImage(selected);
+            this._loadImage(prevChild);
+            this._loadImage(nextChild);
+        }
+
+        _loadImage(img) {
+            if (img && !img.src) {
+                img.src = img.getAttribute('data-src');
+            }
+        }
+
+        _translateX(elem, x, transition) {
+            elem.style.display = 'block';
+            elem.style.transition = transition ? 'transform 0.3s' : '';
+            elem.style.transform = 'translate3d(' + x + 'px, 0, 0)';
+        }
+
+        _leftTransition(selected, oldSelected) {
+            if (!this._touchDir) {
+                this._translateX(oldSelected, 0);
+                this._translateX(selected, -this.offsetWidth);
+            }
+
+            this._translateX(oldSelected, this.offsetWidth, true /* transition */);
+            this._translateX(selected, 0, true /* transition */);
+        }
+
+        _rightTransition(selected, oldSelected) {
+            if (!this._touchDir) {
+                this._translateX(oldSelected, 0);
+                this._translateX(selected, this.offsetWidth);
+            }
+
+            this._translateX(oldSelected, -this.offsetWidth, true /* transition */);
+            this._translateX(selected, 0, true /* transition */);
+        }
+
+        _installListeners() {
+            this.addEventListener('transitionend', this._resetChildrenStyles.bind(this));
+            this.addEventListener('touchstart', this._touchstart.bind(this));
+            this.addEventListener('touchmove', this._touchmove.bind(this));
+            this.addEventListener('touchend', this._touchend.bind(this));
+        }
+
+        _resetChildrenStyles() {
+            let elem = this.firstElementChild;
+            while (elem) {
+                elem.style.display = '';
+                elem.style.transition = '';
+                elem.style.transform = '';
+                elem = elem.nextElementSibling;
+            }
+        }
+
+        _touchstart(event) {
+            if (this.childElementCount < 2) return;
+
+            // Save start coordinates
+            if (!this._touchDir) {
+                this._startX = event.changedTouches[0].clientX;
+                this._startY = event.changedTouches[0].clientY;
+            }
+        }
+
+        _touchmove(event) {
+            if (this.childElementCount < 2) return;
+
+            // Is touchmove mostly horizontal or vertical?
+            if (!this._touchDir) {
+                const absX = Math.abs(event.changedTouches[0].clientX - this._startX);
+                const absY = Math.abs(event.changedTouches[0].clientY - this._startY);
+                this._touchDir = absX > absY ? 'x' : 'y';
+            }
+
+            if (this._touchDir === 'x') {
+                // Prevent vertically scrolling when swiping
+                event.preventDefault();
+
+                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
+                let prevChild = this.selected.previousElementSibling;
+                let nextChild = this.selected.nextElementSibling;
+
+                if (this.loop) {
+                    if (!prevChild) prevChild = this.lastElementChild;
+                    if (!nextChild) nextChild = this.firstElementChild;
+                }
+
+                // Don't translate past the current image if there's no adjacent image in that direction
+                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
+                    dx = 0;
+                }
+
+                this._translateX(this.selected, dx);
+                if (prevChild) {
+                    this._translateX(prevChild, dx - this.offsetWidth);
+                }
+                if (nextChild) {
+                    this._translateX(nextChild, dx + this.offsetWidth);
+                }
+            }
+        }
+
+        _touchend(event) {
+            if (this.childElementCount < 2 || event.touches.length) return;
+
+            if (this._touchDir === 'x') {
+                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
+                let prevChild = this.selected.previousElementSibling;
+                let nextChild = this.selected.nextElementSibling;
+
+                if (this.loop) {
+                    if (!prevChild) prevChild = this.lastElementChild;
+                    if (!nextChild) nextChild = this.firstElementChild;
+                }
+
+                // Don't translate past the current image if there's no adjacent image in that direction
+                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
+                    dx = 0;
+                }
+
+                if (dx > 0) {
+                    if (dx > 100) {
+                        if (dx === this.offsetWidth) {
+                            // No transitionend will fire (since we're already in the final state),
+                            // so reset children styles now
+                            this._resetChildrenStyles();
+                        } else {
+                            this._translateX(prevChild, 0, true);
+                            this._translateX(this.selected, this.offsetWidth, true);
+                        }
+                        this.moving = "prev";
+                        this.selected = prevChild;
+                    } else {
+                        this._translateX(prevChild, -this.offsetWidth, true);
+                        this._translateX(this.selected, 0, true);
+                    }
+                } else if (dx < 0) {
+                    if (dx < -100) {
+                        if (dx === -this.offsetWidth) {
+                            // No transitionend will fire (since we're already in the final state),
+                            // so reset children styles now
+                            this._resetChildrenStyles();
+                        } else {
+                            this._translateX(this.selected, -this.offsetWidth, true);
+                            this._translateX(nextChild, 0, true);
+                        }
+                        this.moving = "next";
+                        this.selected = nextChild;
+                    } else {
+                        this._translateX(this.selected, 0, true);
+                        this._translateX(nextChild, this.offsetWidth, true);
+                    }
+                } else {
+                    // No transitionend will fire (since we're already in the final state),
+                    // so reset children styles now
+                    this._resetChildrenStyles();
+                }
+            }
+            // Reset touch direction
+            this._touchDir = null;
+        }
+
+    };
+
+</script>
+<link rel="import" href="components/carousel.html">
 </head>
 
 <body>
     <main class="container">
+        <wc-carousel loop auto interval="3000">
+            <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
+            <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
+            <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
+            <img data-src="https://app-layout-assets.appspot.com/assets/bg4.jpg">
+        </wc-carousel>
         <p class="line"><a class='open-modal' href="#m1">Abrir modal</a></p>
         <div class="line">
-            <a is="a-wctooltip" dir="top" title="Tooltip top" href="javascript:;">Tootip top</a> | 
-            <a is="a-wctooltip" dir="right" title="Tooltip right" href="javascript:;">Tootip right</a> | 
-            <a is="a-wctooltip" dir="left" title="Tooltip left" href="javascript:;">Tootip left</a> | 
+            <a is="a-wctooltip" dir="top" title="Tooltip top" href="javascript:;">Tootip top</a> |
+            <a is="a-wctooltip" dir="right" title="Tooltip right" href="javascript:;">Tootip right</a> |
+            <a is="a-wctooltip" dir="left" title="Tooltip left" href="javascript:;">Tootip left</a> |
             <a is="a-wctooltip" dir="bottom" title="Tooltip bottom" href="javascript:;">Tootip bottom</a>
         </div>
         <div class="line">
             <input type="text" is="input-wctooltip" dir="top" title="Tooltip top" placeholder="Input" />
-            <button is="button-wctooltip" dir="right" title="Tooltip right" >Button</button>
+            <button is="button-wctooltip" dir="right" title="Tooltip right">Button</button>
         </div>
         <div class="line">
-            <a id="p1" href="javascript:;">Popover top</a> | 
-            <a id="p2" href="javascript:;">Popover right</a> | 
-            <a id="p3" href="javascript:;">Popover left</a> | 
+            <a id="p1" href="javascript:;">Popover top</a> |
+            <a id="p2" href="javascript:;">Popover right</a> |
+            <a id="p3" href="javascript:;">Popover left</a> |
             <a id="p4" href="javascript:;">Popover bottom</a>
             <wc-popover target="#p1" dir="top">
                 <h3>Popover top</h3>
@@ -84,7 +301,7 @@
             <h3>Modal Header</h3>
         </header>
         <main>
-            <table-fa-icons icon-size="2x" cols="7" />
+            <p>Modal example</p>
         </main>
         <footer>
             <button class="btn btn-confirm" type="button">Confirmar</button>
@@ -92,7 +309,7 @@
         </footer>
     </wc-modal>
 
-    <script>
+    <!--<script>
         window.addEventListener('load', function () {
             if (window.location.hash)
                 document.querySelector(`wc-modal[id=${window.location.hash.substring(1)}]`).open();
@@ -104,7 +321,7 @@
                     modal.open();
                 }));
         });
-    </script>
+    </script>-->
 </body>
 
 </html>
