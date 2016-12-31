@@ -1,52 +1,68 @@
-<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
 
-<dom-module id="elem-wctooltip">
+<dom-module id="wc-tooltip">
 <template>
-    <content></content>
+    <slot></slot>
 </template>
 
 <script>
-    var options = {
-        properties: {
-            title: String,
-            dir: String,
-        },
-        bindStyles: function (elem, styles) {
+    class WcTooltip extends Polymer.Element {
+        static get is() { return 'wc-tooltip'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    title: String,
+                    direction: String,
+                }
+            };
+        }
+
+        _bindStyles(elem, styles) {
             for (var key in styles) elem.style[key] = styles[key];
-        },
-        create: function() {
-            this.elem = document.createElement('wc-tooltip');
-            this.elem.classList.add("wc-tooltip");
+        }
+
+        _create() {
+            this.elem = document.createElement('div');
+            this.elem.classList.add('wc-tooltip');
+            this._bindStyles(this.elem, {
+                position: 'absolute',
+                padding: '5px',
+                display: 'none',
+                visibility: 'hidden',
+                opacity: 0,
+            });
             document.body.appendChild(this.elem);
-        },
-        getPosition: function() {
-            var contentRect = this.getBoundingClientRect();
-            
+        }
+        _getPosition() {
+            var contentRect = this.targetElem.getBoundingClientRect();
+
             this.elem.style.display = 'block';
             var elemRect = this.elem.getBoundingClientRect();
-            
+
             var position = {};
-            switch(this.dir || this.getAttribute("dir")) {
+            switch (this.direction) {
                 case "top":
-                    position = { 
+                    position = {
                         top: `${contentRect.top - elemRect.height}px`,
                         left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "bottom":
-                    position = { 
+                    position = {
                         top: `${contentRect.top + elemRect.height}px`,
                         left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "left":
-                    position = { 
+                    position = {
                         top: `${contentRect.top}px`,
                         left: `${(contentRect.left - elemRect.width)}px`
                     }
                     break;
-                case "right":
-                    position = { 
+                default:
+                    position = {
                         top: `${contentRect.top}px`,
                         left: `${(contentRect.left + contentRect.width)}px`
                     }
@@ -54,76 +70,43 @@
             };
 
             return position;
-        },
-        show: function() {
-            var styles = this.getPosition();
-            this.bindStyles(this.elem, styles);
+        }
+        _show() {
+            var styles = Object.assign({
+                opacity: 1,
+                display: 'block',
+                visibility: 'visible',
+                transition: 'opacity .3s ease-in-out'
+            }, this._getPosition());
+            this._bindStyles(this.elem, styles);
             this.elem.classList.add('in');
-        },
-        hide: function() {
-            var styles = this.getPosition();
-            this.bindStyles(this.elem, styles);
+        }
+        _hide() {
+            var styles = Object.assign({
+                display: 'none',
+                visibility: 'hidden',
+                opacity: 0,
+            }, this._getPosition());
+            this._bindStyles(this.elem, styles);
             this.elem.classList.remove('in');
-        },
-        ready: function () {
+        }
+        connectedCallback() {
             var self = this;
-            self.create();
-            self.elem.innerText = this.title;
+            this._create();
+            this.elem.innerText = this.title;
+            this.title = "";
 
-            this.addEventListener('mouseenter', function () {
-                self.show();
+            this.targetElem = this.target ? document.querySelector(this.target) : this;
+            this.targetElem.addEventListener('mouseenter', function () {
+                self._show();
             });
-            this.addEventListener('mouseout', function () {
-                self.hide();
+            this.targetElem.addEventListener('mouseout', function () {
+                self._hide();
             });
         }
-    };
-
-    function createTooltip(is, exts) {
-        var opts = Object.assign({}, options);
-        opts.is = is;
-        opts.extends = exts;
-        Polymer(opts);
     }
 
-    createTooltip('a-wctooltip', 'a');
-    createTooltip('button-wctooltip', 'button');
-    createTooltip('input-wctooltip', 'input');
-    createTooltip('div-wctooltip', 'div');
-</script>
-</dom-module>
-
-<dom-module id="wc-tooltip">
-<template>
-    <style>
-        :host {
-            position: absolute;
-            padding: 5px;
-            display: none;
-            visibility: hidden;
-            opacity: 0;
-        }
-
-        :host.in {
-            opacity: 1;
-            display: block;
-            visibility: visible;
-            transition: opacity .3s ease-in-out;
-        }
-    </style>
-
-    <aside>
-        <content></content>
-    </aside>
-</template>
-
-<script>
-    Polymer({
-        is: "wc-tooltip",
-        parameters: {
-        },
-        ready: function () {
-        }
-    });
+    // Register custom element definition using standard platform API
+    customElements.define(WcTooltip.is, WcTooltip);
 </script>
 </dom-module>

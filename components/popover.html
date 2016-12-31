@@ -1,62 +1,68 @@
-<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
 
 <dom-module id="wc-popover">
 <template>
-    <style>
-        :host {
-            position: absolute;
-            right: 0;
-            display: none;
-            z-index: -1;
-            pointer-events: none;
-        }
-    </style>
-    <content></content>
+    <slot></slot>
 </template>
 
 <script>
-    Polymer({
-        is: 'wc-popover',
-        properties: {
-            target: String,
-            dir: String,
-        },
-        bindStyles: function (elem, styles) {
+    class WcPopover extends Polymer.Element {
+        static get is() { return 'wc-popover'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    target: String,
+                    direction: String,
+                }
+            };
+        }
+
+        _bindStyles(elem, styles) {
             for (var key in styles) elem.style[key] = styles[key];
-        },
-        create: function() {
-            this.elem = document.createElement('wc-popover-box');
-            this.elem.classList.add("wc-popover");
+        }
+
+        _create() {
+            this.elem = document.createElement('div');
+            this.elem.classList.add('wc-popover');
+            this._bindStyles(this.elem, {
+                position: 'absolute',
+                padding: '5px',
+                display: 'none',
+                visibility: 'hidden',
+                opacity: 0,
+            });
             document.body.appendChild(this.elem);
-        },
-        getPosition: function() {
+        }
+        _getPosition() {
             var contentRect = this.targetElem.getBoundingClientRect();
-            
+
             this.elem.style.display = 'block';
             var elemRect = this.elem.getBoundingClientRect();
-            
+
             var position = {};
-            switch(this.dir || this.getAttribute("dir")) {
+            switch (this.direction) {
                 case "top":
-                    position = { 
+                    position = {
                         top: `${contentRect.top - elemRect.height}px`,
                         left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "bottom":
-                    position = { 
+                    position = {
                         top: `${contentRect.top + elemRect.height}px`,
                         left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "left":
-                    position = { 
+                    position = {
                         top: `${contentRect.top}px`,
                         left: `${(contentRect.left - elemRect.width)}px`
                     }
                     break;
-                case "right":
-                    position = { 
+                default:
+                    position = {
                         top: `${contentRect.top}px`,
                         left: `${(contentRect.left + contentRect.width)}px`
                     }
@@ -64,68 +70,43 @@
             };
 
             return position;
-        },
-        show: function() {
-            var styles = this.getPosition();
-            this.bindStyles(this.elem, styles);
+        }
+        _show() {
+            var styles = Object.assign({
+                opacity: 1,
+                display: 'block',
+                visibility: 'visible',
+                transition: 'opacity .3s ease-in-out'
+            }, this._getPosition());
+            this._bindStyles(this.elem, styles);
             this.elem.classList.add('in');
-        },
-        hide: function() {
-            var styles = this.getPosition();
-            this.bindStyles(this.elem, styles);
+        }
+        _hide() {
+            var styles = Object.assign({
+                display: 'none',
+                visibility: 'hidden',
+                opacity: 0,
+            }, this._getPosition());
+            this._bindStyles(this.elem, styles);
             this.elem.classList.remove('in');
-        },
-        ready: function () {
+        }
+        connectedCallback() {
             var self = this;
-            self.create();
+            this._create();
+            this.elem.innerHTML = this.innerHTML;
+            this.innerHTML = "";
+
             this.targetElem = document.querySelector(this.target);
-
-            this.getContentChildren('content').forEach(content => {
-                self.elem.appendChild(content);
-            });
-
             this.targetElem.addEventListener('mouseenter', function () {
-                self.show();
+                self._show();
             });
             this.targetElem.addEventListener('mouseout', function () {
-                self.hide();
+                self._hide();
             });
         }
-    });
-</script>
-</dom-module>
+    }
 
-<dom-module id="wc-popover-box">
-<template>
-    <style>
-        :host {
-            position: absolute;
-            padding: 5px;
-            display: none;
-            visibility: hidden;
-            opacity: 0;
-        }
-
-        :host.in {
-            opacity: 1;
-            display: block;
-            visibility: visible;
-            transition: opacity .3s ease-in-out;
-        }
-    </style>
-
-    <aside>
-        <content></content>
-    </aside>
-</template>
-
-<script>
-    Polymer({
-        is: "wc-popover-box",
-        parameters: {
-        },
-        ready: function () {
-        }
-    });
+    // Register custom element definition using standard platform API
+    customElements.define(WcPopover.is, WcPopover);
 </script>
 </dom-module>

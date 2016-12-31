@@ -1,9 +1,10 @@
-<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
 
 <dom-module id="wc-modal">
   <template>
     <style>
       :host {
+        contain: content;
         position: fixed;
         top: 0;
         right: 0;
@@ -16,18 +17,14 @@
         outline: 0;
       }
 
-      :host.open {
-        display: block !important;
-      }
-
-      :host .modal {
+      .modal-dialog {
         position: relative;
         width: auto;
         max-width: 600px;
         margin: 30px auto;
       }
 
-      :host .modal-content {
+      .modal-content {
         position: relative;
         background-color: #fff;
         -webkit-background-clip: padding-box;
@@ -36,88 +33,106 @@
         border-radius: .3rem;
         outline: 0;
       }
-      :host ::content main {
-        position: relative;
-        padding: 15px;
-      }
 
-      :host ::content header {
-        padding: 15px;
+      ::slotted(header) {
+        padding: 15px !important;
         border-bottom: 1px solid #e5e5e5;
       }
+      
+      ::slotted(main) {
+        position: relative;
+        padding: 15px !important;
+      }
 
-      :host ::content footer {
-        padding: 15px;
+      ::slotted(footer) {
+        padding: 15px !important;
         text-align: right;
         border-top: 1px solid #e5e5e5;
       }
     </style>
 
-    <aside class="modal">
-      <div class="modal-content">
-        <content></content>
-      </div>
-    </aside>
+<div class="modal-dialog">
+  <div class="modal-content">
+    <slot></slot>
+  </div>
+</div>
 </template>
 
 <script>
-    Polymer({
-      is: "wc-modal",
-      properties: {
-        backdrop: Boolean,
-        allowScroll: Boolean,
-        isOpen: Boolean
-      },
-      open: function () {
-        if (this.backdrop && !document.querySelector('#modal-backdrop')) {
-          var bdelem = document.createElement('div');
-          bdelem.id = 'modal-backdrop';
-          var styles = {
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            'z-index': 1040,
-            'background-color': '#000',
-            opacity: .5
-          };
+  class WcModal extends Polymer.Element {
+    static get is() { return "wc-modal"; }
 
-          for (var key in styles) bdelem.style[key] = styles[key];
-
-          document.body.appendChild(bdelem);
+    static get config() {
+      return {
+        properties: {
+          hasBackdrop: Boolean,
+          allowScroll: Boolean,
+          isOpen: {
+            type: Boolean,
+            observer: '_isOpenChanged'
+          }
         }
+      };
+    }
 
-        this.root.host.classList.add('open');
-        this.fire('open');
-      },
-      close: function () {
-        if (this.backdrop) {
-          document.querySelector('#modal-backdrop').remove();
-        }
-
-        this.root.host.classList.remove('open');
-        this.fire('close');
-      },
-      toogle: function () {
-        if (this.isOpen) this.close();
-        else this.open();
-
-        this.isOpen = !this.isOpen;
-      },
-      ready: function () {
-        if (this.isOpen) {
-          this.open();
-        }
-
-        var self = this;
-        this.getContentChildren('content').forEach(content =>
-          content.querySelectorAll('.modal-close').forEach(e =>
-            e.addEventListener('click', function () {
-              self.close();
-            }))
-        );
+    connectedCallback() {
+      if (this.hasBackdrop) {
+        this._prepareBackdrop();
       }
-    });
-  </script>
+
+      var self = this;
+      self.querySelectorAll('[close-modal]').forEach(e =>
+        e.addEventListener('click', function () {
+          self.isOpen = false;
+        }));
+
+      super.connectedCallback();
+    }
+
+    _prepareBackdrop() {
+      this.backdrop = document.querySelector('#modal-backdrop');
+      if (!this.backdrop) {
+        this.backdrop = document.createElement('div');
+        this.backdrop.id = 'modal-backdrop';
+        var styles = {
+          position: 'fixed',
+          display: 'none',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          'z-index': 1040,
+          'background-color': '#000',
+          opacity: .5
+        };
+
+        for (var key in styles) this.backdrop.style[key] = styles[key];
+
+        document.body.appendChild(this.backdrop);
+      }
+    }
+
+    _open(oppened) {
+      if (this.hasBackdrop) this.backdrop.style.display = 'block';
+      this.style.display = 'block';
+      this.dispatchEvent(new CustomEvent('openned'));
+    }
+
+    _close() {
+      if (this.hasBackdrop) this.backdrop.style.display = 'none';
+
+      this.style.display = 'none';
+      this.dispatchEvent(new CustomEvent('closed'));
+    }
+
+    _isOpenChanged(oppened) {
+      if (oppened) this._open();
+      else this._close();
+    }
+  };
+
+  // Register custom element definition using standard platform API
+  customElements.define(WcModal.is, WcModal);
+
+</script>
 </dom-module>

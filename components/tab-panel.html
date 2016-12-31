@@ -1,70 +1,132 @@
-<link rel="import" href="https://polygit2.appspot.com/components/polymer/polymer.html">
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
 
 <dom-module id="wc-tabpanel">
-    <template>
+<template>
     <style>
+        :host {
+            position: relative;
+        }
     </style>
-
-    <div class="wc-tabpanel">
-        <content></content>
-    </div>
+    <slot></slot>
 </template>
 
 <script>
-    Polymer({
-        is: "wc-tabpanel",
-        properties: {
-        },
-        ready: function () {
-            var self = this;
-            
-            
+    class WcTabPanel extends Polymer.Element {
+        static get is() { return 'wc-tabpanel'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                }
+            };
         }
-    });
+
+        connectedCallback() {
+            let self = this;
+            this.querySelectorAll('wc-tabcontent > section').forEach(e => e.style.display = 'none');
+            super.connectedCallback();
+        }
+
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcTabPanel.is, WcTabPanel);
 </script>
 </dom-module>
 
-<dom-module id="wc-tab">
-    <template>
-    <style>
-        ::content > main{
-            display: none;
+<dom-module id="wc-tabnav">
+<template>
+    <style>        
+        :host {
+            border-bottom: 1px solid #ddd;
         }
 
-        ::content main.active {
-            display: block;
+        ::slotted(a) {
+            display: inline-block;
+            margin-bottom: -1px;
+            padding: .5em 1em;
+            border: 1px solid transparent;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+        }
+
+        ::slotted([active]) {
+            color: #55595c;
+            background-color: #fff;
+            border-color: #ddd #ddd transparent;
         }
     </style>
-
-    <content></content>
+    <slot></slot>
 </template>
 
 <script>
-    Polymer({
-        is: "wc-tab",
-        properties: {
-            active: Boolean
-        },
-        activate: function() {
-            this.querySelector('main'). classList.add('active');
-        },
-        deactivate: function() {
-            this.querySelector('main'). classList.remove('active');
-        },
-        toggle: function() {
-            if(this.active)
-                this.deactivate();
-            else
-                this.activate();
-            this.active = !this.active;
-        },
-        ready: function () {
-            var self = this;
-            if(this.active) this.activate();
-            else this.deactivate();
+    class WcTabNav extends Polymer.Element {
+        static get is() { return 'wc-tabnav'; }
 
-            this.querySelector('header').addEventListener('click', e => document.querySelectorAll('wc-tab').forEach(tab => tab.deactivate()));
+
+        static get config() {
+            return {
+                properties: {
+                }
+            };
         }
-    });
+
+        connectedCallback() {
+            let self = this;
+            this.querySelectorAll('a').forEach(e => {
+                e.addEventListener('click', function() {
+                    let parent = self.parentElement;
+                    let old = self.querySelector('[active]');
+                    if(old) {
+                        parent.querySelector(old.hash).style.display = 'none';
+                        old.removeAttribute('active');
+                    }
+                    parent.querySelector(e.hash).style.display = 'block';
+                    e.setAttribute('active', '');
+                });
+                if(e.hasAttribute('active')) e.click();
+            });
+            super.connectedCallback();
+        }
+
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcTabNav.is, WcTabNav);
+</script>
+</dom-module>
+
+<dom-module id="wc-tabcontent">
+<template>
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcTabContent extends Polymer.Element {
+        static get is() { return 'wc-tabcontent'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                }
+            };
+        }
+
+        connectedCallback() {
+            let self = this;
+            super.connectedCallback();
+        }
+
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcTabContent.is, WcTabContent);
 </script>
 </dom-module>

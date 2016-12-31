@@ -1,0 +1,110 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="wc-collapse">
+<template>
+    <style>
+        :host {
+            position: relative;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcCollapse extends Polymer.Element {
+        static get is() { return 'wc-collapse'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    isOpen: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_isOpenChanged'
+                    }
+                }
+            };
+        }
+
+        connectedCallback() {
+            let self = this;
+            this.querySelectorAll('[toggle-collapse]')
+                .forEach(dd => dd.addEventListener('click', () => self.isOpen = !self.isOpen));
+            super.connectedCallback();
+        }
+
+        _isOpenChanged(openned) {
+            let elems = this.querySelectorAll(':not([toggle-collapse])');
+            if(openned) {
+                this.dispatchEvent(new CustomEvent('opening'));
+                elems.forEach(e => e.style.display = 'block');
+                this.dispatchEvent(new CustomEvent('openned'));
+            }
+            else {
+                this.dispatchEvent(new CustomEvent('closing'));
+                elems.forEach(e => e.style.display = 'none');
+                this.dispatchEvent(new CustomEvent('closed'));
+            }
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcCollapse.is, WcCollapse);
+</script>
+</dom-module>
+
+<dom-module id="wc-accordion">
+<template>
+    <style>
+        :host {
+            position: relative;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcAccordion extends Polymer.Element {
+        static get is() { return 'wc-accordion'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    allowMultiple: Boolean
+                }
+            };
+        }
+
+        connectedCallback() {
+            let self = this;
+            if(this.allowMultiple) {
+                
+                this.querySelectorAll('[open-all]')
+                    .forEach(dd => dd.addEventListener('click', self._openAll.bind(self)));
+                this.querySelectorAll('[collapse-all]')
+                    .forEach(dd => dd.addEventListener('click', self._collapseAll.bind(self)));
+            }
+            else {
+                this.querySelectorAll('wc-collapse')
+                    .forEach(e => e.addEventListener('opening', () => {
+                        if(this.old) this.old.isOpen = false;
+                        this.old = e;
+                    }));
+            }
+            super.connectedCallback();
+        }
+
+        _openAll() {
+            this.querySelectorAll('wc-collapse').forEach(e => e.isOpen = true);
+        }
+        _collapseAll() {
+            this.querySelectorAll('wc-collapse').forEach(e => e.isOpen = false);
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcAccordion.is, WcAccordion);
+</script>
+</dom-module>

@@ -9,224 +9,20 @@
 
     <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-    <!--<link rel="import" href="components/modal.html">
+    <link rel="import" href="components/carousel.html">
+    <link rel="import" href="components/modal.html">
     <link rel="import" href="components/tooltip.html">
     <link rel="import" href="components/popover.html">
-    <link rel="import" href="components/tab-panel.html">-->
-    <script>
-
-    const MyMixin = subclass => class extends subclass {
-
-        connectedCallback() {
-            super.connectedCallback();
-            this.selected = this.firstElementChild;
-            requestAnimationFrame(this._installListeners.bind(this));
-        }
-
-        previous() {
-            this.moving = "prev";
-            const elem = this.selected.previousElementSibling;
-            if (elem && !this._touchDir) this.selected = elem;
-            else if (this.loop && !this._touchDir) this.selected = this.lastElementChild;
-        }
-
-        next() {
-            this.moving = "next";
-            const elem = this.selected.nextElementSibling;
-            if (elem && !this._touchDir) this.selected = elem;
-            else if (this.loop && !this._touchDir) this.selected = this.firstElementChild;
-        }
-
-        _selectedChanged(selected, oldSelected) {
-            if (selected && oldSelected) {
-                if (this.moving == "prev")
-                    this._leftTransition(selected, oldSelected);
-                else if (this.moving == "next")
-                    this._rightTransition(selected, oldSelected);
-            }
-
-            if (oldSelected) oldSelected.removeAttribute('selected');
-            if (selected) selected.setAttribute('selected', '');
-
-            let prevChild = this.selected.previousElementSibling;
-            let nextChild = this.selected.nextElementSibling;
-
-            if (this.loop) {
-                if (!prevChild) prevChild = this.lastElementChild;
-                if (!nextChild) nextChild = this.firstElementChild;
-            }
-
-            this._loadImage(selected);
-            this._loadImage(prevChild);
-            this._loadImage(nextChild);
-        }
-
-        _loadImage(img) {
-            if (img && !img.src) {
-                img.src = img.getAttribute('data-src');
-            }
-        }
-
-        _translateX(elem, x, transition) {
-            elem.style.display = 'block';
-            elem.style.transition = transition ? 'transform 0.3s' : '';
-            elem.style.transform = 'translate3d(' + x + 'px, 0, 0)';
-        }
-
-        _leftTransition(selected, oldSelected) {
-            if (!this._touchDir) {
-                this._translateX(oldSelected, 0);
-                this._translateX(selected, -this.offsetWidth);
-            }
-
-            this._translateX(oldSelected, this.offsetWidth, true /* transition */);
-            this._translateX(selected, 0, true /* transition */);
-        }
-
-        _rightTransition(selected, oldSelected) {
-            if (!this._touchDir) {
-                this._translateX(oldSelected, 0);
-                this._translateX(selected, this.offsetWidth);
-            }
-
-            this._translateX(oldSelected, -this.offsetWidth, true /* transition */);
-            this._translateX(selected, 0, true /* transition */);
-        }
-
-        _installListeners() {
-            this.addEventListener('transitionend', this._resetChildrenStyles.bind(this));
-            this.addEventListener('touchstart', this._touchstart.bind(this));
-            this.addEventListener('touchmove', this._touchmove.bind(this));
-            this.addEventListener('touchend', this._touchend.bind(this));
-        }
-
-        _resetChildrenStyles() {
-            let elem = this.firstElementChild;
-            while (elem) {
-                elem.style.display = '';
-                elem.style.transition = '';
-                elem.style.transform = '';
-                elem = elem.nextElementSibling;
-            }
-        }
-
-        _touchstart(event) {
-            if (this.childElementCount < 2) return;
-
-            // Save start coordinates
-            if (!this._touchDir) {
-                this._startX = event.changedTouches[0].clientX;
-                this._startY = event.changedTouches[0].clientY;
-            }
-        }
-
-        _touchmove(event) {
-            if (this.childElementCount < 2) return;
-
-            // Is touchmove mostly horizontal or vertical?
-            if (!this._touchDir) {
-                const absX = Math.abs(event.changedTouches[0].clientX - this._startX);
-                const absY = Math.abs(event.changedTouches[0].clientY - this._startY);
-                this._touchDir = absX > absY ? 'x' : 'y';
-            }
-
-            if (this._touchDir === 'x') {
-                // Prevent vertically scrolling when swiping
-                event.preventDefault();
-
-                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
-                let prevChild = this.selected.previousElementSibling;
-                let nextChild = this.selected.nextElementSibling;
-
-                if (this.loop) {
-                    if (!prevChild) prevChild = this.lastElementChild;
-                    if (!nextChild) nextChild = this.firstElementChild;
-                }
-
-                // Don't translate past the current image if there's no adjacent image in that direction
-                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
-                    dx = 0;
-                }
-
-                this._translateX(this.selected, dx);
-                if (prevChild) {
-                    this._translateX(prevChild, dx - this.offsetWidth);
-                }
-                if (nextChild) {
-                    this._translateX(nextChild, dx + this.offsetWidth);
-                }
-            }
-        }
-
-        _touchend(event) {
-            if (this.childElementCount < 2 || event.touches.length) return;
-
-            if (this._touchDir === 'x') {
-                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
-                let prevChild = this.selected.previousElementSibling;
-                let nextChild = this.selected.nextElementSibling;
-
-                if (this.loop) {
-                    if (!prevChild) prevChild = this.lastElementChild;
-                    if (!nextChild) nextChild = this.firstElementChild;
-                }
-
-                // Don't translate past the current image if there's no adjacent image in that direction
-                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
-                    dx = 0;
-                }
-
-                if (dx > 0) {
-                    if (dx > 100) {
-                        if (dx === this.offsetWidth) {
-                            // No transitionend will fire (since we're already in the final state),
-                            // so reset children styles now
-                            this._resetChildrenStyles();
-                        } else {
-                            this._translateX(prevChild, 0, true);
-                            this._translateX(this.selected, this.offsetWidth, true);
-                        }
-                        this.moving = "prev";
-                        this.selected = prevChild;
-                    } else {
-                        this._translateX(prevChild, -this.offsetWidth, true);
-                        this._translateX(this.selected, 0, true);
-                    }
-                } else if (dx < 0) {
-                    if (dx < -100) {
-                        if (dx === -this.offsetWidth) {
-                            // No transitionend will fire (since we're already in the final state),
-                            // so reset children styles now
-                            this._resetChildrenStyles();
-                        } else {
-                            this._translateX(this.selected, -this.offsetWidth, true);
-                            this._translateX(nextChild, 0, true);
-                        }
-                        this.moving = "next";
-                        this.selected = nextChild;
-                    } else {
-                        this._translateX(this.selected, 0, true);
-                        this._translateX(nextChild, this.offsetWidth, true);
-                    }
-                } else {
-                    // No transitionend will fire (since we're already in the final state),
-                    // so reset children styles now
-                    this._resetChildrenStyles();
-                }
-            }
-            // Reset touch direction
-            this._touchDir = null;
-        }
-
-    };
-
-</script>
-<link rel="import" href="components/carousel.html">
+    <link rel="import" href="components/dropdown.html">
+    <link rel="import" href="components/collapse.html">
+    <link rel="import" href="components/tab-panel.html">
+    <link rel="import" href="components/input-mask.html">
+    <link rel="import" href="components/datepicker.html">
 </head>
 
 <body>
     <main class="container">
-        <wc-carousel loop auto interval="3000">
+        <wc-carousel infinite-loop auto-play interval="3000">
             <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
             <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
             <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
@@ -234,70 +30,147 @@
         </wc-carousel>
         <p class="line"><a class='open-modal' href="#m1">Abrir modal</a></p>
         <div class="line">
-            <a is="a-wctooltip" dir="top" title="Tooltip top" href="javascript:;">Tootip top</a> |
-            <a is="a-wctooltip" dir="right" title="Tooltip right" href="javascript:;">Tootip right</a> |
-            <a is="a-wctooltip" dir="left" title="Tooltip left" href="javascript:;">Tootip left</a> |
-            <a is="a-wctooltip" dir="bottom" title="Tooltip bottom" href="javascript:;">Tootip bottom</a>
+            <wc-tooltip direction="top" title="Tooltip top"><a href="javascript:;">Tootip top</a></wc-tooltip> |
+            <wc-tooltip direction="right" title="Tooltip right"><a href="javascript:;">Tootip right</a></wc-tooltip> |
+            <wc-tooltip direction="left" title="Tooltip left"><a href="javascript:;">Tootip left</a></wc-tooltip> |
+            <wc-tooltip direction="bottom" title="Tooltip bottom"><a href="javascript:;">Tootip bottom</a></wc-tooltip>
         </div>
         <div class="line">
-            <input type="text" is="input-wctooltip" dir="top" title="Tooltip top" placeholder="Input" />
-            <button is="button-wctooltip" dir="right" title="Tooltip right">Button</button>
+            <wc-tooltip direction="top" title="Tooltip top"><input type="text" placeholder="Input" /></wc-tooltip>
+            <wc-tooltip direction="right" title="Tooltip right"><button>Button</button></wc-tooltip>
         </div>
         <div class="line">
             <a id="p1" href="javascript:;">Popover top</a> |
             <a id="p2" href="javascript:;">Popover right</a> |
             <a id="p3" href="javascript:;">Popover left</a> |
             <a id="p4" href="javascript:;">Popover bottom</a>
-            <wc-popover target="#p1" dir="top">
+            <wc-popover target="#p1" direction="top">
                 <h3>Popover top</h3>
                 <p>Um propover directed to top</p>
             </wc-popover>
-            <wc-popover target="#p2" dir="right">
+            <wc-popover target="#p2" direction="right">
                 <h3>Popover right</h3>
                 <p>Um propover directed to right</p>
             </wc-popover>
-            <wc-popover target="#p3" dir="left">
+            <wc-popover target="#p3" direction="left">
                 <h3>Popover left</h3>
                 <p>Um propover directed to left</p>
             </wc-popover>
-            <wc-popover target="#p4" dir="bottom">
+            <wc-popover target="#p4" direction="bottom">
                 <h3>Popover bottom</h3>
                 <p>Um propover directed to bottom</p>
             </wc-popover>
         </div>
-        <wc-tabpanel>
-            <wc-tab active>
-                <header>
-                    Tab 1
-                </header>
-                <main>
-                    <h2>Tab 1</h2>
-                    <p>Content of tab panel</p>
-                </main>
-            </wc-tab>
-            <wc-tab>
-                <header>
-                    Tab 2
-                </header>
-                <main>
-                    <h2>Tab 2</h2>
-                    <p>Content of tab panel</p>
-                </main>
-            </wc-tab>
-            <wc-tab>
-                <header>
-                    Tab 3
-                </header>
-                <main>
-                    <h2>Tab 3</h2>
-                    <p>Content of tab panel</p>
-                </main>
-            </wc-tab>
-        </wc-tabpanel>
+        <div class="line">
+            <wc-dropdown>
+                <button toggle-dropdown>Toggle Dropdown</button>
+                <wc-dropdown-menu>
+                    <a href="#">Action</a>
+                    <a href="#">Another action</a>
+                    <a href="#">Something else here</a>
+                </wc-dropdown-menu>
+            </wc-dropdown>
+            <wc-dropdown is-open>
+                <button type="button" class="btn btn-danger">Action</button>
+                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" toggle-dropdown>v</button>
+                <wc-dropdown-menu>
+                    <a href="#">Action</a>
+                    <a href="#">Another action</a>
+                    <a href="#">Something else here</a>
+                </wc-dropdown-menu>
+            </wc-dropdown>
+        </div>
+        <div class="line">
+            <button class="collapse-toggler" target="#c1">Toggle Collapse</button>
+            <wc-collapse id="c1" >
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+            </wc-collapse>
+            <wc-collapse>
+                <h3 toggle-collapse>Toggle Collapse</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+            </wc-collapse>
+        </div>        
+        <div class="line">
+            <wc-accordion allow-multiple> 
+                <h3>Accordion 1</h3>
+                <div>
+                    <button open-all>Open all</button>
+                    <button collapse-all>Collapse all</button>
+                </div>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 1</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 2</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 3</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 4</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+            </wc-accordion>
+            <wc-accordion> 
+                <h3>Accordion 2</h3>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 1</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 2</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 3</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+                <wc-collapse>
+                    <h3 toggle-collapse>Collapse 4</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                </wc-collapse>
+            </wc-accordion>
+        </div>
+        <div class="line">
+            <wc-tabpanel>
+                <wc-tabnav>
+                    <a href="#tab1" active>Tab 1</a>
+                    <a href="#tab2">Tab 2</a>
+                    <a href="#tab3">Tab 3</a>
+                    <a href="#tab4">Tab 4</a>
+                </wc-tabnav>
+                <wc-tabcontent>
+                    <section id="tab1">
+                        <h2>Tab 1</h2>
+                        <p>Content of tab panel</p>
+                    </section>
+                    <section id="tab2">
+                        <h2>Tab 2</h2>
+                        <p>Content of tab panel</p>
+                    </section>
+                    <section id="tab3">
+                        <h2>Tab 3</h2>
+                        <p>Content of tab panel</p>
+                    </section>
+                    <section id="tab4">
+                        <h2>Tab 4</h2>
+                        <p>Content of tab panel</p>
+                    </section>
+                </wc-tabcontent>
+            </wc-tabpanel>
+        </div>
+        <div class="line">
+            <wc-inputmask mask="__/__/____">
+                <input type="text" placeholder="00/00/0000">
+            </wc-inputmask>
+        </div>
     </main>
-    <wc-modal id="m1" backdrop allow-scroll>
+    <wc-modal id="m1" has-backdrop allow-scroll>
         <header>
-            <a href="#" class="pull-right modal-close">x</a>
+            <a href="#" class="pull-right" close-modal>x</a>
             <h3>Modal Header</h3>
         </header>
         <main>
@@ -305,23 +178,31 @@
         </main>
         <footer>
             <button class="btn btn-confirm" type="button">Confirmar</button>
-            <button class="btn btn-cancel modal-close" type="button">Cancelar</button>
+            <button class="btn btn-cancel" type="button" close-modal>Cancelar</button>
         </footer>
     </wc-modal>
 
-    <!--<script>
+    <script>
         window.addEventListener('load', function () {
-            if (window.location.hash)
-                document.querySelector(`wc-modal[id=${window.location.hash.substring(1)}]`).open();
+            if (window.location.hash){
+                let modal = document.querySelector(`wc-modal[id=${window.location.hash.substring(1)}]`);
+                if(modal) modal.isOpen = true;
+            }
 
             document.querySelectorAll('.open-modal').forEach(e =>
                 e.addEventListener('click', function () {
                     let modal = document.querySelector(`wc-modal[id=${e.hash.substring(1)}]`);
-                    modal.addEventListener('close', () => window.location.hash = '');
-                    modal.open();
+                    modal.addEventListener('closed', () => window.location.hash = '');
+                    modal.isOpen = true;
+                }));
+
+            document.querySelectorAll('.collapse-toggler').forEach(e =>
+                e.addEventListener('click', function () {
+                    let elem = document.querySelector(e.getAttribute('target'));
+                    elem.isOpen = !elem.isOpen;
                 }));
         });
-    </script>-->
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,108 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="wc-dropdown">
+<template>
+    <style>
+        :host {
+            position: relative;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcDropdown extends Polymer.Element {
+        static get is() { return 'wc-dropdown'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    isOpen: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_isOpenChanged'
+                    }
+                }
+            };
+        }
+
+        connectedCallback() {
+            let self = this;
+            this.menuElem = this.querySelector('wc-dropdown-menu');
+            this.querySelectorAll('[toggle-dropdown]')
+                .forEach(dd => dd.addEventListener('click', () => self.isOpen = !self.isOpen));
+            super.connectedCallback();
+        }
+
+        _isOpenChanged(openned) {   
+            if(openned) this.menuElem.setAttribute('openned', '');
+            else this.menuElem.removeAttribute('openned');
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcDropdown.is, WcDropdown);
+</script>
+</dom-module>
+
+<dom-module id="wc-dropdown-menu">
+<template>
+    <style>
+        :host {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            display: none;
+            float: left;
+            min-width: 10rem;
+            padding: .5rem 0;
+            margin: .125rem 0 0;
+            font-size: 1rem;
+            color: #373a3c;
+            text-align: left;
+            list-style: none;
+            background-color: #fff;
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: .25rem;
+        }
+
+        :host([openned]) {
+            display: block;
+        }
+
+        ::slotted(a) {
+            display: block;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcDropdownMenu extends Polymer.Element {
+        static get is() { return 'wc-dropdown-menu'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                }
+            };
+        }
+        connectedCallback() {
+            if(this.parentElement.nodeName != "WC-DROPDOWN") {
+                console.log('Isn\'t possible to user wc-dropdown-menu outside of wc-dropdown');
+                return;
+            }
+
+            super.connectedCallback();
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcDropdownMenu.is, WcDropdownMenu);
+</script>
+</dom-module>

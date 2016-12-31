@@ -1,0 +1,71 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="wc-inputmask">
+<template>
+    <style>
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcInputMask extends Polymer.Element {
+        static get is() { return 'wc-inputmask'; }
+
+
+        static get config() {
+            return {
+                properties: {
+                    mask: String,
+                }
+            };
+        }
+
+        connectedCallback() {
+            let self = this;
+            this.input = this.querySelector('input');
+            /*this.input.value = new RegExp(this.pattern.replace(/[09]/g, ' ')
+                            .replace(/a/g, ' ')
+                            .replace(/A/g, ' '));*/
+            this.pattern = this.mask.split('');
+            this._changed();
+            //this.input.addEventListener('focus', this._changed.bind(this))
+            this.input.addEventListener('keyup', this._changed.bind(this))
+            super.connectedCallback();
+        }
+
+        _stripMask(maskedData) {
+            function isDigit(char) {
+                return /\d/.test(char);
+            }
+            return maskedData.split('').filter(isDigit);
+        }
+        
+        // Replace `_` characters with characters from `data`
+        _applyMask(data) {
+            return this.pattern.map(function(char) {
+                if (char != '_') return char;
+                if (data.length == 0) return char;
+                return data.shift();
+            }).join('')
+        }
+        
+        _reapplyMask(data) {
+            return this._applyMask(this._stripMask(data));
+        }
+        
+        _changed() {   
+            var oldStart = this.input.selectionStart;
+            var oldEnd = this.input.selectionEnd;
+            
+            this.input.value = this._reapplyMask(this.input.value);
+            
+            this.input.selectionStart = oldStart;
+            this.input.selectionEnd = oldEnd;
+        }
+
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcInputMask.is, WcInputMask);
+</script>
+</dom-module>

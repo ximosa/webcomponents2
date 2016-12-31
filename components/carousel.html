@@ -2,67 +2,77 @@
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
 
 <dom-module id="wc-carousel">
-    <template>
+<template>
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            contain: content;
+        }
 
-        <!-- Styles MUST be inside template -->
-        <style>
+        :host::after {
+            display: block;
+            content: '';
+            padding-top: 75%; /* 4:3 = height is 75% of width */
+        }
 
-      :host {
-        display: block;
-        position: relative;
-        overflow: hidden;
-      }
+        ::slotted(img) {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
 
-      div > ::slotted(:not([selected])) {
-        display: none;
-      }
+        ::slotted(:not([selected])) {
+            display: none;
+        }
 
-      button {
-        position: absolute;
-        top: calc(50% - 20px);
-        padding: 0;
-        line-height: 40px;
-        border: none;
-        background: none;
-        color: #DDD;
-        font-size: 40px;
-        font-weight: bold;
-        opacity: 0.7;
-        cursor: pointer;
-      }
+        button {
+            position: absolute;
+            top: calc(50% - 20px);
+            padding: 0;
+            line-height: 40px;
+            border: none;
+            background: none;
+            color: #DDD;
+            font-size: 40px;
+            font-weight: bold;
+            opacity: 0.7;
+            cursor: pointer;
+        }
 
-      button:hover,
-      button:focus {
-        opacity: 1;
-        outline: none;
-      }
+        button:hover,
+        button:focus {
+            opacity: 1;
+            outline: none;
+        }
 
-      #prevBtn {
-        left: 12px;
-      }
+        #prevBtn {
+            left: 12px;
+        }
 
-      #nextBtn {
-        right: 12px;
-      }
+        #nextBtn {
+            right: 12px;
+        }
 
-      button[disabled] {
-        opacity: 0.4;
-        cursor: default;
-      }
+        button[disabled] {
+            opacity: 0.4;
+            cursor: default;
+        }
     </style>
 
-<div>
     <slot></slot>
-</div>
-<button id="prevBtn" on-click="previous">❮</button>
-<button id="nextBtn" on-click="next">❯</button>
+
+    <button id="prevBtn" on-click="previous">❮</button>
+    <button id="nextBtn" on-click="next">❯</button>
 
 </template>
 
 <script>
 
     // Extend Polymer.Element base class
-    class WcCarousel extends MyMixin(Polymer.Element) {
+    class WcCarousel extends Polymer.Element {
 
         static get is() { return 'wc-carousel' }
 
@@ -74,12 +84,12 @@
                         type: Object,
                         observer: '_selectedChanged'
                     },
-                    loop: {
+                    infiniteLoop: {
                         type: Boolean
                     },
-                    auto: {
+                    autoPlay: {
                         type: Boolean,
-                        observer: '_autoChanged'
+                        observer: '_autoPlayChanged'
                     },
                     interval: {
                         type: Number
@@ -94,29 +104,59 @@
 
         connectedCallback() {
             super.connectedCallback();
+
+            this.selected = this.firstElementChild;
+            requestAnimationFrame(this._installListeners.bind(this));
+            
             this._resetInterval();
         }
 
         previous() {
-            super.previous();
+            this.moving = "prev";
+            const elem = this.selected.previousElementSibling;
+            if (elem && !this._touchDir) this.selected = elem;
+            else if (this.infiniteLoop && !this._touchDir) this.selected = this.lastElementChild;
             this._resetInterval();
         }
 
         next() {
-            super.next();
+            this.moving = "next";
+            const elem = this.selected.nextElementSibling;
+            if (elem && !this._touchDir) this.selected = elem;
+            else if (this.infiniteLoop && !this._touchDir) this.selected = this.firstElementChild;
             this._resetInterval();
         }
 
         _selectedChanged(selected, oldSelected) {
-            super._selectedChanged(selected, oldSelected);
+            if (selected && oldSelected) {
+                if (this.moving == "prev")
+                    this._leftTransition(selected, oldSelected);
+                else if (this.moving == "next")
+                    this._rightTransition(selected, oldSelected);
+            }
 
-            if (!this.loop) {
+            if (oldSelected) oldSelected.removeAttribute('selected');
+            if (selected) selected.setAttribute('selected', '');
+
+            let prevChild = this.selected.previousElementSibling;
+            let nextChild = this.selected.nextElementSibling;
+
+            if (this.infiniteLoop) {
+                if (!prevChild) prevChild = this.lastElementChild;
+                if (!nextChild) nextChild = this.firstElementChild;
+            }
+
+            this._loadImage(selected);
+            this._loadImage(prevChild);
+            this._loadImage(nextChild);
+
+            if (!this.infiniteLoop) {
                 this.$.prevBtn.disabled = !selected.previousElementSibling;
                 this.$.nextBtn.disabled = !selected.nextElementSibling;
             }
         }
 
-        _autoChanged(auto) {
+        _autoPlayChanged(auto) {
             if (auto) this._resetInterval();
             else if (this.fninterval) {
                 clearInterval(this.fninterval);
@@ -135,19 +175,167 @@
                 else this.previous();
             }, this.interval);
         }
+        
+        _loadImage(img) {
+            if (img && !img.src) {
+                img.src = img.getAttribute('data-src');
+            }
+        }
+
+        _translateX(elem, x, transition) {
+            elem.style.display = 'block';
+            elem.style.transition = transition ? 'transform 0.3s' : '';
+            elem.style.transform = 'translate3d(' + x + 'px, 0, 0)';
+        }
+
+        _leftTransition(selected, oldSelected) {
+            if (!this._touchDir) {
+                this._translateX(oldSelected, 0);
+                this._translateX(selected, -this.offsetWidth);
+            }
+
+            this._translateX(oldSelected, this.offsetWidth, true /* transition */);
+            this._translateX(selected, 0, true /* transition */);
+        }
+
+        _rightTransition(selected, oldSelected) {
+            if (!this._touchDir) {
+                this._translateX(oldSelected, 0);
+                this._translateX(selected, this.offsetWidth);
+            }
+
+            this._translateX(oldSelected, -this.offsetWidth, true /* transition */);
+            this._translateX(selected, 0, true /* transition */);
+        }
+
+        _installListeners() {
+            this.addEventListener('transitionend', this._resetChildrenStyles.bind(this));
+            this.addEventListener('touchstart', this._touchstart.bind(this));
+            this.addEventListener('touchmove', this._touchmove.bind(this));
+            this.addEventListener('touchend', this._touchend.bind(this));
+        }
+
+        _resetChildrenStyles() {
+            let elem = this.firstElementChild;
+            while (elem) {
+                elem.style.display = '';
+                elem.style.transition = '';
+                elem.style.transform = '';
+                elem = elem.nextElementSibling;
+            }
+        }
 
         _touchstart(event) {
+            if (this.childElementCount < 2) return;
             if (this.fninterval) {
                 clearInterval(this.fninterval);
                 delete this.fninterval;
             }
 
-            super._touchstart(event);
+            // Save start coordinates
+            if (!this._touchDir) {
+                this._startX = event.changedTouches[0].clientX;
+                this._startY = event.changedTouches[0].clientY;
+            }
+        }
+
+        _touchmove(event) {
+            if (this.childElementCount < 2) return;
+
+            // Is touchmove mostly horizontal or vertical?
+            if (!this._touchDir) {
+                const absX = Math.abs(event.changedTouches[0].clientX - this._startX);
+                const absY = Math.abs(event.changedTouches[0].clientY - this._startY);
+                this._touchDir = absX > absY ? 'x' : 'y';
+            }
+
+            if (this._touchDir === 'x') {
+                // Prevent vertically scrolling when swiping
+                event.preventDefault();
+
+                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
+                let prevChild = this.selected.previousElementSibling;
+                let nextChild = this.selected.nextElementSibling;
+
+                if (this.infiniteLoop) {
+                    if (!prevChild) prevChild = this.lastElementChild;
+                    if (!nextChild) nextChild = this.firstElementChild;
+                }
+
+                // Don't translate past the current image if there's no adjacent image in that direction
+                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
+                    dx = 0;
+                }
+
+                this._translateX(this.selected, dx);
+                if (prevChild) {
+                    this._translateX(prevChild, dx - this.offsetWidth);
+                }
+                if (nextChild) {
+                    this._translateX(nextChild, dx + this.offsetWidth);
+                }
+            }
         }
 
         _touchend(event) {
+            if (this.childElementCount < 2 || event.touches.length) return;
             this._resetInterval();
-            super._touchend(event);
+
+            if (this._touchDir === 'x') {
+                let dx = Math.round(event.changedTouches[0].clientX - this._startX);
+                let prevChild = this.selected.previousElementSibling;
+                let nextChild = this.selected.nextElementSibling;
+
+                if (this.infiniteLoop) {
+                    if (!prevChild) prevChild = this.lastElementChild;
+                    if (!nextChild) nextChild = this.firstElementChild;
+                }
+
+                // Don't translate past the current image if there's no adjacent image in that direction
+                if ((!prevChild && dx > 0) || (!nextChild && dx < 0)) {
+                    dx = 0;
+                }
+
+                if (dx > 0) {
+                    if (dx > 100) {
+                        if (dx === this.offsetWidth) {
+                            // No transitionend will fire (since we're already in the final state),
+                            // so reset children styles now
+                            this._resetChildrenStyles();
+                        } else {
+                            this._translateX(prevChild, 0, true);
+                            this._translateX(this.selected, this.offsetWidth, true);
+                        }
+                        this.moving = "prev";
+                        this.selected = prevChild;
+                    } else {
+                        this._translateX(prevChild, -this.offsetWidth, true);
+                        this._translateX(this.selected, 0, true);
+                    }
+                } else if (dx < 0) {
+                    if (dx < -100) {
+                        if (dx === -this.offsetWidth) {
+                            // No transitionend will fire (since we're already in the final state),
+                            // so reset children styles now
+                            this._resetChildrenStyles();
+                        } else {
+                            this._translateX(this.selected, -this.offsetWidth, true);
+                            this._translateX(nextChild, 0, true);
+                        }
+                        this.moving = "next";
+                        this.selected = nextChild;
+                    } else {
+                        this._translateX(this.selected, 0, true);
+                        this._translateX(nextChild, this.offsetWidth, true);
+                    }
+                } else {
+                    // No transitionend will fire (since we're already in the final state),
+                    // so reset children styles now
+                    this._resetChildrenStyles();
+                }
+            }
+            // Reset touch direction
+            this._touchDir = null;
         }
     }
 
