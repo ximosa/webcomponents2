@@ -6,6 +6,11 @@
 </template>
 
 <script>
+    /**
+     * FUTURE FEATURES
+     * Auto direction
+     * Add forms to control position
+    **/
     class WcPopover extends Polymer.Element {
         static get is() { return 'wc-popover'; }
 
@@ -13,8 +18,25 @@
         static get config() {
             return {
                 properties: {
-                    target: String,
+                    target: {
+                        type: String,
+                        observer: "_targetChanged"
+                    },
                     direction: String,
+                    visible: {
+                        type: Boolean,
+                        observer: '_visibleChanged'
+                    },
+                    showEvent: {
+                        type: String,
+                        value: "mouseenter",
+                        observer: "_showEventChanged"
+                    },
+                    hideEvent : {
+                        type: String,
+                        value: "mouseout",
+                        observer: "_hideEventChanged"
+                    }
                 }
             };
         }
@@ -45,26 +67,26 @@
             switch (this.direction) {
                 case "top":
                     position = {
-                        top: `${contentRect.top - elemRect.height}px`,
-                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                        top: `${(contentRect.top + window.scrollY) - elemRect.height}px`,
+                        left: `${((contentRect.left  + window.scrollX) + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "bottom":
                     position = {
-                        top: `${contentRect.top + elemRect.height}px`,
-                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                        top: `${(contentRect.top + window.scrollY) + contentRect.height}px`,
+                        left: `${((contentRect.left  + window.scrollX) + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "left":
                     position = {
-                        top: `${contentRect.top}px`,
-                        left: `${(contentRect.left - elemRect.width)}px`
+                        top: `${(contentRect.top + window.scrollY)}px`,
+                        left: `${((contentRect.left  + window.scrollX) - elemRect.width)}px`
                     }
                     break;
                 default:
                     position = {
-                        top: `${contentRect.top}px`,
-                        left: `${(contentRect.left + contentRect.width)}px`
+                        top: `${(contentRect.top + window.scrollY)}px`,
+                        left: `${((contentRect.left  + window.scrollX) + contentRect.width)}px`
                     }
                     break;
             };
@@ -72,23 +94,63 @@
             return position;
         }
         _show() {
-            var styles = Object.assign({
-                opacity: 1,
-                display: 'block',
-                visibility: 'visible',
-                transition: 'opacity .3s ease-in-out'
-            }, this._getPosition());
-            this._bindStyles(this.elem, styles);
-            this.elem.classList.add('in');
+            this.visible = true;
         }
         _hide() {
-            var styles = Object.assign({
-                display: 'none',
-                visibility: 'hidden',
-                opacity: 0,
-            }, this._getPosition());
-            this._bindStyles(this.elem, styles);
-            this.elem.classList.remove('in');
+            this.visible = false;
+        }
+        _targetChanged(target) {
+            if(this.targetElem) {
+                if(this.showEvent && this.showEvent != "none")
+                    this.targetElem.removeEventListener(this.showEvent, this._show.bind(this));
+                if(this.hideEvent && this.hideEvent != "none")
+                    this.targetElem.removeEventListener(this.hideEvent, this._hide.bind(this));
+            }
+
+            this.targetElem = document.querySelector(target);
+            if(this.showEvent && this.showEvent != "none")
+                this.targetElem.addEventListener(this.showEvent, this._show.bind(this));
+            if(this.hideEvent && this.hideEvent != "none")
+                this.targetElem.addEventListener(this.hideEvent, this._hide.bind(this));
+        }
+        _showEventChanged(showEvent, oldShowEvent) {
+            this.showEvent = showEvent.trim();
+            if(this.targetElem) {
+                if(oldShowEvent && oldShowEvent != "none")
+                    this.targetElem.removeEventListener(oldShowEvent, this._show.bind(this));
+                if(this.showEvent && this.showEvent != "none")
+                    this.targetElem.addEventListener(showEvent, this._show.bind(this));
+            }
+        }
+        _hideEventChanged(hideEvent, oldHideEvent) {
+            this.hideEvent = hideEvent.trim();
+            if(this.targetElem) {
+                if(oldHideEvent && oldHideEvent != "none")
+                    this.targetElem.removeEventListener(oldHideEvent, this._show.bind(this));
+                if(this.hideEvent && this.hideEvent != "none")
+                    this.targetElem.addEventListener(this.hideEvent, this._show.bind(this));
+            }
+        }
+        _visibleChanged(visible) {
+            if(visible) {
+                var styles = Object.assign({
+                    opacity: 1,
+                    display: 'block',
+                    visibility: 'visible',
+                    transition: 'opacity .3s ease-in-out'
+                }, this._getPosition());
+                this._bindStyles(this.elem, styles);
+                this.elem.classList.add('in');
+            }
+            else {
+                var styles = Object.assign({
+                    display: 'none',
+                    visibility: 'hidden',
+                    opacity: 0,
+                }, this._getPosition());
+                this._bindStyles(this.elem, styles);
+                this.elem.classList.remove('in');
+            }
         }
         connectedCallback() {
             var self = this;
@@ -96,13 +158,7 @@
             this.elem.innerHTML = this.innerHTML;
             this.innerHTML = "";
 
-            this.targetElem = document.querySelector(this.target);
-            this.targetElem.addEventListener('mouseenter', function () {
-                self._show();
-            });
-            this.targetElem.addEventListener('mouseout', function () {
-                self._hide();
-            });
+            super.connectedCallback();
         }
     }
 

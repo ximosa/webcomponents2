@@ -23,9 +23,8 @@
         }
 
         connectedCallback() {
-            let self = this;
-            this.querySelectorAll('wc-tabcontent > section').forEach(e => e.style.display = 'none');
             super.connectedCallback();
+            let self = this;
         }
 
     }
@@ -73,21 +72,17 @@
         }
 
         connectedCallback() {
+            super.connectedCallback();
             let self = this;
             this.querySelectorAll('a').forEach(e => {
                 e.addEventListener('click', function() {
-                    let parent = self.parentElement;
                     let old = self.querySelector('[active]');
-                    if(old) {
-                        parent.querySelector(old.hash).style.display = 'none';
-                        old.removeAttribute('active');
-                    }
-                    parent.querySelector(e.hash).style.display = 'block';
-                    e.setAttribute('active', '');
+                    if(old) old.removeAttribute('active');
+                    
+                    this.setAttribute('active', true);
+                    self.nextElementSibling.active = this.hash;
                 });
-                if(e.hasAttribute('active')) e.click();
             });
-            super.connectedCallback();
         }
 
     }
@@ -103,6 +98,23 @@
         :host {
             display: block;
         }
+
+        ::slotted(section) {
+            opacity: 0;
+            height: 0;
+            width: 0;
+        }
+
+        ::slotted(section.active) {
+            opacity: 1;
+            height: auto;
+            width: 100%;
+        }
+
+        ::slotted(section.fade.active) {
+            opacity: 1;
+            transition: opacity .4s ease-out;
+        }
     </style>
     <slot></slot>
 </template>
@@ -111,17 +123,27 @@
     class WcTabContent extends Polymer.Element {
         static get is() { return 'wc-tabcontent'; }
 
-
         static get config() {
             return {
                 properties: {
+                    active: {
+                        type: String,
+                        observer: "_activeChanged"
+                    }
                 }
             };
         }
 
+        _activeChanged(active) {
+            let old = this.querySelector('.active');
+            if(old) old.classList.remove('active');
+            this.querySelector(active).classList.add('active');
+        }
         connectedCallback() {
-            let self = this;
             super.connectedCallback();
+            let self = this;
+            let activated = this.previousElementSibling.querySelector('[active]');
+            if(activated) this.active = activated.hash;
         }
 
     }

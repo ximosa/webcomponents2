@@ -52,11 +52,23 @@
                 <h3>Popover right</h3>
                 <p>Um propover directed to right</p>
             </wc-popover>
-            <wc-popover target="#p3" direction="left">
+            <wc-popover target="#p3" direction="left" visible>
                 <h3>Popover left</h3>
                 <p>Um propover directed to left</p>
             </wc-popover>
             <wc-popover target="#p4" direction="bottom">
+                <h3>Popover bottom</h3>
+                <p>Um propover directed to bottom</p>
+            </wc-popover>
+        </div>
+        <div class="line">
+            <input id="p5" type="text" placeholder="Input" />
+            <button id="p6">Button</button>
+            <wc-popover target="#p6" direction="left">
+                <h3>Popover left</h3>
+                <p>Um propover directed to left</p>
+            </wc-popover>
+            <wc-popover target="#p5" direction="bottom" show-event="focus" hide-event="blur">
                 <h3>Popover bottom</h3>
                 <p>Um propover directed to bottom</p>
             </wc-popover>
