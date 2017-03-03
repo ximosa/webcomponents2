@@ -1,0 +1,22 @@
+{
+  "name": "webcomponents",
+  "version": "1.0.0",
+  "description": "A library of web components in Google Polymer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michael-silva/webcomponents.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michael-silva/webcomponents/issues"
+  },
+  "homepage": "https://github.com/michael-silva/webcomponents#readme",
+  "devDependencies": {
+    "lite-server": "^2.2.2"
+  }
+}
