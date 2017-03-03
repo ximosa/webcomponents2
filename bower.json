@@ -1,7 +1,22 @@
 {
-  "name": "webcomponents",
-  "private": true,
+  "name": "webcomponents2",
+  "version": "0.0.2",
   "dependencies": {
     "polymer": "Polymer/polymer#2.0-preview"
-  }
+  },
+  "description": "A library of web components in Google Polymer",
+  "main": "index.html",
+  "keywords": [
+    "polymer",
+    "polymer2",
+    "webcompoents"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "README.md",
+    "bower.json"
+  ]
 }
