@@ -107,11 +107,13 @@
                     this.targetElem.removeEventListener(this.hideEvent, this._hide.bind(this));
             }
 
-            this.targetElem = document.querySelector(target);
-            if(this.showEvent && this.showEvent != "none")
-                this.targetElem.addEventListener(this.showEvent, this._show.bind(this));
-            if(this.hideEvent && this.hideEvent != "none")
-                this.targetElem.addEventListener(this.hideEvent, this._hide.bind(this));
+            this.targetElem = target.trim() ? document.querySelector(target) : null;
+            if(this.targetElem) {
+                if(this.showEvent && this.showEvent != "none")
+                    this.targetElem.addEventListener(this.showEvent, this._show.bind(this));
+                if(this.hideEvent && this.hideEvent != "none")
+                    this.targetElem.addEventListener(this.hideEvent, this._hide.bind(this));
+            }
         }
         _showEventChanged(showEvent, oldShowEvent) {
             this.showEvent = showEvent.trim();

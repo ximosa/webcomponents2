@@ -4,7 +4,7 @@
 <template>
     <style>
         :host {
-            position: relative;
+            /*position: relative;*/
         }
     </style>
     <slot></slot>
@@ -38,6 +38,7 @@
 <template>
     <style>        
         :host {
+            display: block;
             border-bottom: 1px solid #ddd;
         }
 
@@ -103,12 +104,16 @@
             opacity: 0;
             height: 0;
             width: 0;
+            z-index: -1;
+            pointer-events: none;
         }
 
         ::slotted(section.active) {
             opacity: 1;
             height: auto;
             width: 100%;
+            z-index: 1;
+            pointer-events: auto;
         }
 
         ::slotted(section.fade.active) {

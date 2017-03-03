@@ -1,0 +1,32 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="{{name}}">
+<template>
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class ElementName extends Polymer.Element {
+        static get is() { return '{{name}}'; }
+
+        static get config() {
+            return {
+                properties: {
+                }
+            };
+        }
+        connectedCallback() {
+            var self = this;
+            super.connectedCallback();
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(ElementName.is, ElementName);
+</script>
+</dom-module>

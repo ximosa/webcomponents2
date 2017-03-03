@@ -1,0 +1,98 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<dom-module id="wc-alert">
+<template>
+    <style>
+        :host {
+            z-index: -1;
+            padding: 0px;
+            opacity: 0;
+            height: 0;
+            display: block;
+            border: var(--border);
+            background-color: var(--bg-color);
+        }
+        :host(.warning) {
+            --border: 1px solid #eea236;
+            --bg-color: #fcf8e3;
+        }
+        :host(.success) {
+            --border: 1px solid #5cb85c;
+            --bg-color: #dff0d8;
+        }
+
+        :host(.visible) {
+            z-index: 1;
+            padding: 5px;
+            opacity: 1;
+            height: auto;
+            transition: opacity .4s ease-in;
+        }
+    </style>
+    <slot></slot>
+</template>
+
+<script>
+    class WcAlert extends Polymer.Element {
+        static get is() { return 'wc-alert'; }
+
+        static get config() {
+            return {
+                properties: {
+                    dismissDelay: Number,
+                    dismissible: {
+                        type: Boolean,
+                        observer: '_dismissibleChanged'
+                    },
+                    visible: {
+                        type: Boolean,
+                        observer: '_visibleChanged'
+                    }
+                }
+            };
+        }
+        _dismissibleChanged(dismissible) {
+            if(!this.root.isConnected) return;
+            let btn = this.root.querySelector('[dismiss]');
+            
+            if(btn) {
+                if(dismissible)
+                    btn.addEventListener('click', this.dismiss, false);
+                else
+                    btn.removeEventListener('click', this.dismiss);
+            }
+        }
+        _visibleChanged(visible) {
+            if(visible) {
+                if(this.root.isConnected) {
+                    this.root.host.classList.add('visible');
+                    if(this.dismissDelay > 0) 
+                        this.dismissTimer = setTimeout(this.dismiss.bind(this), this.dismissDelay);
+                }
+            }
+            else {
+                this.root.host.classList.remove('visible');
+                if(this.dismissTimer) {
+                    clearTimeout(this.dismissTimer);
+                    delete this.dismissTimer;
+                }
+            }
+        }
+        connectedCallback() {
+            super.connectedCallback();
+            var self = this;
+            
+            if(this.visible) 
+                this._visibleChanged(true);
+            if(this.dismissible)
+                this._dismissibleChanged(true);
+        }
+        dismiss() {
+            this.visible = false;
+        }
+    }
+
+    // Register custom element definition using standard platform API
+    customElements.define(WcAlert.is, WcAlert);
+</script>
+</dom-module>
