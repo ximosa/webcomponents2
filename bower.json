@@ -5,7 +5,7 @@
     "polymer": "Polymer/polymer#2.0-preview"
   },
   "description": "A library of web components in Google Polymer",
-  "main": "index.html",
+  "main": "src/all.html",
   "keywords": [
     "polymer",
     "polymer2",

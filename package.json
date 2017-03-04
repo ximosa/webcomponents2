@@ -7,7 +7,7 @@
     "webcomponents",
     "polymer 2"
   ],
-  "main": "index.js",
+  "main": "demo/index.html",
   "scripts": {
     "start": "lite-server"
   },
