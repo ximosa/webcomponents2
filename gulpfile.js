@@ -28,12 +28,12 @@ gulp.task('create-all', ['minify'], function () {
 
 // Default Task
 gulp.task('test', function (cb) {
-    exec('git status', function (err, stdout, stderr) {
+    exec('git status --porcelain', function (err, stdout, stderr) {
         console.log(stdout);
         //console.log(stderr);
         cb(err);
     });
-});
+}); 
 
 gulp.task('publish', ['minify', 'create-all'], function (cb) {
     gulp.src('bower.json')
