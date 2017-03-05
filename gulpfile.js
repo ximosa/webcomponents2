@@ -2,16 +2,19 @@
 var gulp = require('gulp');
 
 // Include Our Plugins
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var polymin = require('gulp-polymin2');
-var exec = require('child_process').exec;
+const concat = require('gulp-concat');
+const rename = require('gulp-rename');
+const polymin = require('gulp-polymin2');
+const replace = require('gulp-replace');
+const jeditor = require('gulp-json-editor');
+const exec = require('child_process').exec;
 
 // Minify Components
 gulp.task('minify', function (cb) {
     return gulp.src(['src/*.html', '!src/_*'])
         .pipe(polymin())
         .pipe(rename(function (path) { path.basename += ".min"; }))
+        .pipe(replace(/bower_components\//g, '../'))
         .pipe(gulp.dest('dist'));
 });
 
@@ -22,32 +25,28 @@ gulp.task('create-all', ['minify'], function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('npm-start', function (cb) {
-    exec('npm start', function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
-});
 
 // Default Task
-gulp.task('default', ['minify', 'create-all', 'npm-start'], function () {
-    function reportChange(event){
-        console.log('Event type: ' + event.type); // added, changed, or deleted
-        console.log('Event path: ' + event.path); // The path of the modified file
-    }
-
-    gulp.watch('src/*.html', ['minify', 'create-all']).on('change', reportChange);;
-});
-
-gulp.task('publish', ['minify', 'create-all'], function () {
-    exec('npm publish', function (err, stdout, stderr) {
+gulp.task('test', function (cb) {
+    exec('git status', function (err, stdout, stderr) {
         console.log(stdout);
-        console.log(stderr);
+        //console.log(stderr);
         cb(err);
     });
+});
 
-    exec('bower publish', function (err, stdout, stderr) {
+gulp.task('publish', ['minify', 'create-all'], function (cb) {
+    gulp.src('bower.json')
+        .pipe(jeditor(function(json) {
+            var nums = json.version.split('.').map(n => +n);
+            nums[nums.length - 1]++;
+            json.version = nums.join('.');
+            console.log(json.version);
+            return json;
+        }))
+        .pipe(gulp.dest('./'))
+
+    exec('bower register webcompoennst2 https://github.com/michael-silva/webcomponents2.git', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
         cb(err);

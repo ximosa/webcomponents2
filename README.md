@@ -3,13 +3,9 @@
 
 ## Installation
 
-We recommend package installation with Bower, add it to your development dependencies:
+Install package with Bower and add it to your development dependencies:
 
 `bower install --save webcomponents2`
-
-Butr it's possible to install with NPM, add it to your development dependencies:
-
-`npm install --save webcomponents2`
 
 
 ## Components
