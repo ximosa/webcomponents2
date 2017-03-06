@@ -1,11 +1,10 @@
 {
   "name": "webcomponents2",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "dependencies": {
     "polymer": "Polymer/polymer#2.0-preview"
   },
   "description": "A library of web components in Google Polymer 2",
-  "main": "dist/all.min.html",
   "keywords": [
     "polymer",
     "polymer2",
