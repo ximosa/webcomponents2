@@ -7,6 +7,9 @@ Install package with Bower and add it to your development dependencies:
 
 `bower install --save webcomponents2`
 
+## Example
+
+See examples in link (https://michael-silva.github.io/webcomponents2/)
 
 ## Components
  - [Alert](#alert)
@@ -26,7 +29,7 @@ Install package with Bower and add it to your development dependencies:
 <wc-alert class="warning" dismissible>
     <span dismiss class="dismiss-button"><i class="fa fa-close"></i></span>
     <h5><i class="fa fa-info-circle"></i> Title</h5>
-    <p>Alert text gere.</p>
+    <p>Alert text here.</p>
 </wc-alert>
 ```
 

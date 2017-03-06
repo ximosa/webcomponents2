@@ -16,7 +16,10 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "README.md",
+    "src",
+    "assets",
+    "index.html",
+    "package.json",
     "bower.json"
   ]
 }

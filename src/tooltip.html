@@ -40,31 +40,31 @@
 
             this.elem.style.display = 'block';
             var elemRect = this.elem.getBoundingClientRect();
-
+            
             var position = {};
             switch (this.direction) {
                 case "top":
                     position = {
-                        top: `${contentRect.top - elemRect.height}px`,
-                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                        top: `${(contentRect.top + window.scrollY) - elemRect.height}px`,
+                        left: `${((contentRect.left  + window.scrollX) + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "bottom":
                     position = {
-                        top: `${contentRect.top + elemRect.height}px`,
-                        left: `${(contentRect.left + (contentRect.width / 2)) - (elemRect.width / 2)}px`
+                        top: `${(contentRect.top + window.scrollY) + contentRect.height}px`,
+                        left: `${((contentRect.left  + window.scrollX) + (contentRect.width / 2)) - (elemRect.width / 2)}px`
                     }
                     break;
                 case "left":
                     position = {
-                        top: `${contentRect.top}px`,
-                        left: `${(contentRect.left - elemRect.width)}px`
+                        top: `${(contentRect.top + window.scrollY)}px`,
+                        left: `${((contentRect.left  + window.scrollX) - elemRect.width)}px`
                     }
                     break;
                 default:
                     position = {
-                        top: `${contentRect.top}px`,
-                        left: `${(contentRect.left + contentRect.width)}px`
+                        top: `${(contentRect.top + window.scrollY)}px`,
+                        left: `${((contentRect.left  + window.scrollX) + contentRect.width)}px`
                     }
                     break;
             };

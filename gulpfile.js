@@ -26,13 +26,11 @@ gulp.task('create-all', ['minify'], function () {
 });
 
 
-// Default Task
+// Task to publish
 gulp.task('publish', function (cb) {
-    exec('git status --porcelain || git log --branches --not --remotes --simplify-by-decoration --decorate --oneline', function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
+    exec('git status --porcelain && git log --branches --not --remotes --simplify-by-decoration --decorate --oneline', function (err, stdout, stderr) {
         if(stdout) console.log('You\'ve pending changes to commit or to push and the bower package can\'t be registered');
-        //else gulp.start('bower-register');
+        else gulp.start('bower-register');
         
         cb(err);
     });

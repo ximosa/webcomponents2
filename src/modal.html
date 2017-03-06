@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <dom-module id="wc-modal">
   <template>
@@ -18,8 +18,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        z-index: 1050;
-        display: none;
+        z-index: -1;
         overflow-x: hidden;
         overflow-y: auto;
         outline: 0;
@@ -41,6 +40,7 @@
       }
 
       :host([is-open]) {
+        z-index: 1050;
         opacity: 1;
         transition: opacity .4s ease;
       }
@@ -95,22 +95,23 @@
     }
 
     connectedCallback() {
+      super.connectedCallback();
       if (this.hasBackdrop) {
         this._prepareBackdrop();
       }
 
       var self = this;
-      self.querySelectorAll('[close-modal]').forEach(e =>
-        e.addEventListener('click', function () {
+      this.root.addEventListener('click', e => {
+        if(e.target && e.target.hasAttribute('close-modal'))
           self.isOpen = false;
-        }));
-
-      super.connectedCallback();
+        e.stopPropagation();
+      }, false);
     }
 
     _prepareBackdrop() {
       this.backdrop = document.querySelector('#modal-backdrop');
       if (!this.backdrop) {
+        let self = this;
         this.backdrop = document.createElement('div');
         this.backdrop.id = 'modal-backdrop';
         var styles = {
@@ -126,25 +127,30 @@
         };
 
         for (var key in styles) this.backdrop.style[key] = styles[key];
-
         document.body.appendChild(this.backdrop);
       }
     }
 
+    _documentClickListener(e) {
+      this.isOpen = false;
+    }
+
     _open(oppened) {
       if (this.hasBackdrop) this.backdrop.style.display = 'block';
-      if(!this.allowScroll) document.body.style.overflow = 'hidden';
-      this.style.display = 'block';
+      if (!this.allowScroll) document.body.style.overflow = 'hidden';
+      this.root.host.setAttribute('is-open', true);
+      this.root.host.addEventListener('click', this._documentClickListener.bind(this), false);
       this.dispatchEvent(new CustomEvent('openned'));
     }
 
     _close() {
-      this.style.display = 'none';
+      this.root.host.removeAttribute('is-open');
 
       let hasOthers = false;
-      document.querySelectorAll('wc-modal').forEach(m => { if(m.style.display == "block") hasOthers = true });
+      document.querySelectorAll('wc-modal').forEach(m => { if (m.style.display == "block") hasOthers = true });
       if (!hasOthers && this.hasBackdrop) this.backdrop.style.display = 'none';
-      if(!hasOthers && !this.allowScroll) document.body.style.overflow = '';
+      if (!hasOthers && !this.allowScroll) document.body.style.overflow = '';
+      this.root.host.removeEventListener('click', this._documentClickListener.bind(this), false);
       this.dispatchEvent(new CustomEvent('closed'));
     }
 

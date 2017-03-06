@@ -14,7 +14,6 @@
     class WcDropdown extends Polymer.Element {
         static get is() { return 'wc-dropdown'; }
 
-
         static get config() {
             return {
                 properties: {
@@ -27,16 +26,21 @@
             };
         }
 
-        connectedCallback() {
-            let self = this;
-            this.menuElem = this.querySelector('wc-dropdown-menu');
-            this.querySelectorAll('[toggle-dropdown]')
-                .forEach(dd => dd.addEventListener('click', () => self.isOpen = !self.isOpen));
-            super.connectedCallback();
+        get menuElem() {
+            if(!this._me) this._me = this.querySelector('wc-dropdown-menu');
+            return this._me;
         }
 
-        _isOpenChanged(openned) {   
-            if(openned) this.menuElem.setAttribute('openned', '');
+        connectedCallback() {
+            super.connectedCallback();
+            let self = this;
+            this.querySelectorAll('[toggle-dropdown]')
+                .forEach(dd => dd.addEventListener('click', () => self.isOpen = !self.isOpen));
+        }
+
+        _isOpenChanged(openned) {
+            if(!this.menuElem) return;
+            if(openned) this.menuElem.setAttribute('openned', true);
             else this.menuElem.removeAttribute('openned');
         }
     }
@@ -99,6 +103,8 @@
             }
 
             super.connectedCallback();
+            if(this.parentElement.isOpen) this.setAttribute('openned', true);
+            else this.removeAttribute('openned');
         }
     }
 

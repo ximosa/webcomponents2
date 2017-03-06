@@ -13,164 +13,284 @@
 </head>
 
 <body>
+    <header>
+        <a href="https://github.com/michael-silva" aria-label="Homepage" class="pull-right" title="Go back to GitHub">
+            <svg aria-hidden="true" class="octicon octicon-mark-github" height="24" version="1.1" viewBox="0 0 16 16" width="24">
+                <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+        </a>
+        <h1>Webcomponents 2</h1>
+        <h3>This is a example page using Webcomponents 2.</h3>
+    </header>
     <main class="container">
-        <wc-carousel infinite-loop auto-play interval="3000">
-            <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
-            <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
-            <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
-            <img data-src="https://app-layout-assets.appspot.com/assets/bg4.jpg">
-        </wc-carousel>
-        <p class="line"><a class='open-modal' href="#m1">Abrir modal</a></p>
-        <div class="line">
-            <wc-tooltip direction="top" title="Tooltip top"><a href="javascript:;">Tootip top</a></wc-tooltip> |
-            <wc-tooltip direction="right" title="Tooltip right"><a href="javascript:;">Tootip right</a></wc-tooltip> |
-            <wc-tooltip direction="left" title="Tooltip left"><a href="javascript:;">Tootip left</a></wc-tooltip> |
-            <wc-tooltip direction="bottom" title="Tooltip bottom"><a href="javascript:;">Tootip bottom</a></wc-tooltip>
-        </div>
-        <div class="line">
-            <wc-tooltip direction="top" title="Tooltip top"><input type="text" placeholder="Input" /></wc-tooltip>
-            <wc-tooltip direction="right" title="Tooltip right"><button>Button</button></wc-tooltip>
-        </div>
-        <div class="line">
-            <a id="p1" href="javascript:;">Popover top</a> |
-            <a id="p2" href="javascript:;">Popover right</a> |
-            <a id="p3" href="javascript:;">Popover left</a> |
-            <a id="p4" href="javascript:;">Popover bottom</a>
-            <wc-popover target="#p1" direction="top">
-                <h3>Popover top</h3>
-                <p>Um propover directed to top</p>
-            </wc-popover>
-            <wc-popover target="#p2" direction="right">
-                <h3>Popover right</h3>
-                <p>Um propover directed to right</p>
-            </wc-popover>
-            <wc-popover target="#p3" direction="left" visible>
-                <h3>Popover left</h3>
-                <p>Um propover directed to left</p>
-            </wc-popover>
-            <wc-popover target="#p4" direction="bottom">
-                <h3>Popover bottom</h3>
-                <p>Um propover directed to bottom</p>
-            </wc-popover>
-        </div>
-        <div class="line">
-            <input id="p5" type="text" placeholder="Input" />
-            <button id="p6">Button</button>
-            <wc-popover target="#p6" direction="left">
-                <h3>Popover left</h3>
-                <p>Um propover directed to left</p>
-            </wc-popover>
-            <wc-popover target="#p5" direction="bottom" show-event="focus" hide-event="blur">
-                <h3>Popover bottom</h3>
-                <p>Um propover directed to bottom</p>
-            </wc-popover>
-        </div>
-        <div class="line">
-            <wc-dropdown>
-                <button toggle-dropdown>Toggle Dropdown</button>
-                <wc-dropdown-menu>
-                    <a href="#">Action</a>
-                    <a href="#">Another action</a>
-                    <a href="#">Something else here</a>
-                </wc-dropdown-menu>
-            </wc-dropdown>
-            <wc-dropdown is-open>
-                <button type="button" class="btn btn-danger">Action</button>
-                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" toggle-dropdown>v</button>
-                <wc-dropdown-menu>
-                    <a href="#">Action</a>
-                    <a href="#">Another action</a>
-                    <a href="#">Something else here</a>
-                </wc-dropdown-menu>
-            </wc-dropdown>
-        </div>
-        <div class="line">
-            <button class="collapse-toggler" target="#c1">Toggle Collapse</button>
-            <wc-collapse id="c1" >
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-            </wc-collapse>
-            <wc-collapse>
-                <h3 toggle-collapse>Toggle Collapse</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-            </wc-collapse>
-        </div>        
-        <div class="line">
-            <wc-accordion allow-multiple> 
-                <h3>Accordion 1</h3>
-                <div>
-                    <button open-all>Open all</button>
-                    <button collapse-all>Collapse all</button>
-                </div>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 1</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+        <aside>
+            <nav>
+                <ul>
+                    <li><a href="#alert-section">Alert</a></li>
+                    <li><a href="#carousel-section">Carousel</a></li>
+                    <li><a href="#collapse-section">Collapse</a></li>
+                    <li><a href="#datepicker-section">Datepicker</a></li>
+                    <li><a href="#dropdown-section">Dropdown</a></li>
+                    <li><a href="#inputmask-section">Input Mask</a></li>
+                    <li><a href="#modal-section">Modal</a></li>
+                    <li><a href="#popover-section">Popover</a></li>
+                    <li><a href="#tabpanel-section">Tab Panel</a></li>
+                    <li><a href="#tooltip-section">Tooltip</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <section>
+            <h2 id="alert-section">Alert</h2>
+            <div class="line">
+                <wc-alert class="alert-warning" dismiss-delay="9000" visible>
+                    <h5>Wow! This warning will disappear.</h5>
+                </wc-alert>
+            </div>
+            <div class="line">
+                <wc-alert class="alert-danger" dismissible visible>
+                    <span dismiss class="pull-right">x</span>
+                    <h5>Alert Title</h5>
+                    <p>Alert text goes here.</p>
+                </wc-alert>
+            </div>
+        </section>
+        <section>
+            <h2 id="carousel-section">Carousel</h2>
+            <wc-carousel infinite-loop auto-play interval="3000">
+                <img data-src="https://app-layout-assets.appspot.com/assets/bg1.jpg">
+                <img data-src="https://app-layout-assets.appspot.com/assets/bg2.jpg">
+                <img data-src="https://app-layout-assets.appspot.com/assets/bg3.jpg">
+                <img data-src="https://app-layout-assets.appspot.com/assets/bg4.jpg">
+            </wc-carousel>
+        </section>
+        <section>
+            <h2 id="collapse-section">Collapse</h2>
+            <div class="line">
+                <button class="collapse-toggler" target="#c1">Toggle Collapse</button>
+                <wc-collapse id="c1">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                        pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                        ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                        Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu
+                        nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus
+                        libero, vel sagittis ligula porta ut.</p>
                 </wc-collapse>
                 <wc-collapse>
-                    <h3 toggle-collapse>Collapse 2</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
+                    <h3 toggle-collapse>Toggle Collapse</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                        pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                        ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                        Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu
+                        nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus
+                        libero, vel sagittis ligula porta ut.</p>
                 </wc-collapse>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 3</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 4</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-            </wc-accordion>
-            <wc-accordion> 
-                <h3>Accordion 2</h3>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 1</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 2</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 3</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-                <wc-collapse>
-                    <h3 toggle-collapse>Collapse 4</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus. Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis tempus libero, vel sagittis ligula porta ut.</p>
-                </wc-collapse>
-            </wc-accordion>
-        </div>
-        <div class="line">
-            <wc-tabpanel>
-                <wc-tabnav>
-                    <a href="#tab1" active>Tab 1</a>
-                    <a href="#tab2">Tab 2</a>
-                    <a href="#tab3">Tab 3</a>
-                    <a href="#tab4">Tab 4</a>
-                </wc-tabnav>
-                <wc-tabcontent>
-                    <section id="tab1">
-                        <h2>Tab 1</h2>
-                        <p>Content of tab panel</p>
-                    </section>
-                    <section id="tab2">
-                        <h2>Tab 2</h2>
-                        <p>Content of tab panel</p>
-                    </section>
-                    <section id="tab3">
-                        <h2>Tab 3</h2>
-                        <p>Content of tab panel</p>
-                    </section>
-                    <section id="tab4">
-                        <h2>Tab 4</h2>
-                        <p>Content of tab panel</p>
-                    </section>
-                </wc-tabcontent>
-            </wc-tabpanel>
-        </div>
-        <div class="line">
-            <wc-inputmask mask="__/__/____">
-                <input type="text" placeholder="00/00/0000">
-            </wc-inputmask>
-        </div>
+            </div>
+            <div class="line">
+                <wc-accordion allow-multiple>
+                    <h3>Accordion 1</h3>
+                    <div>
+                        <button open-all>Open all</button>
+                        <button collapse-all>Collapse all</button>
+                    </div>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 1</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 2</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 3</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 4</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                </wc-accordion>
+                <wc-accordion>
+                    <h3>Accordion 2</h3>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 1</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 2</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 3</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                    <wc-collapse>
+                        <h4 toggle-collapse>Collapse 4</h4>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempor ligula diam, et sollicitudin felis
+                            pretium a. Pellentesque vehicula eleifend tortor, et vehicula tellus. Class aptent taciti sociosqu
+                            ad litora torquent per conubia nostra, per inceptos himenaeos. Duis congue luctus est id finibus.
+                            Morbi pellentesque, leo vitae pretium iaculis, justo turpis efficitur ex, at varius purus velit
+                            eu nisl. Mauris imperdiet nisi quis risus vestibulum, ut placerat erat faucibus. Mauris iaculis
+                            tempus libero, vel sagittis ligula porta ut.</p>
+                    </wc-collapse>
+                </wc-accordion>
+            </div>
+        </section>
+        <section>
+            <h2 id="datepicker-section">Datepicker</h2>
+            <p class="line">
+                //In development
+            </p>
+        </section>
+        <section>
+            <h2 id="dropdown-section">Dropdown</h2>
+            <div class="line">
+                <wc-dropdown>
+                    <button toggle-dropdown>Toggle Dropdown</button>
+                    <wc-dropdown-menu>
+                        <a href="#">Action</a>
+                        <a href="#">Another action</a>
+                        <a href="#">Something else here</a>
+                    </wc-dropdown-menu>
+                </wc-dropdown>
+                <wc-dropdown is-open>
+                    <button type="button" class="btn btn-danger">Action</button>
+                    <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" toggle-dropdown>v</button>
+                    <wc-dropdown-menu>
+                        <a href="#">Action</a>
+                        <a href="#">Another action</a>
+                        <a href="#">Something else here</a>
+                    </wc-dropdown-menu>
+                </wc-dropdown>
+            </div>
+        </section>
+        <section>
+            <h2 id="inputmask-section">Input Mask</h2>
+            <div class="line">
+                <wc-inputmask mask="__/__/____">
+                    <input type="text" placeholder="00/00/0000">
+                </wc-inputmask>
+            </div>
+        </section>
+        <section>
+            <h2 id="modal-section">Modal</h2>
+            <p class="line"><a class='open-modal' href="#m1">Abrir modal</a></p>
+        </section>
+        <section>
+            <h2 id="popover-section">Popover</h2>
+            <div class="line">
+                <a id="p1" href="javascript:;">Popover top</a> |
+                <a id="p2" href="javascript:;">Popover right</a> |
+                <a id="p3" href="javascript:;">Popover left</a> |
+                <a id="p4" href="javascript:;">Popover bottom</a>
+                <wc-popover target="#p1" direction="top">
+                    <h3>Popover top</h3>
+                    <p>Um propover directed to top</p>
+                </wc-popover>
+                <wc-popover target="#p2" direction="right">
+                    <h3>Popover right</h3>
+                    <p>Um propover directed to right</p>
+                </wc-popover>
+                <wc-popover target="#p3" direction="left" visible>
+                    <h3>Popover left</h3>
+                    <p>Um propover directed to left</p>
+                </wc-popover>
+                <wc-popover target="#p4" direction="bottom">
+                    <h3>Popover bottom</h3>
+                    <p>Um propover directed to bottom</p>
+                </wc-popover>
+            </div>
+            <div class="line">
+                <input id="p5" type="text" placeholder="Input" />
+                <button id="p6">Button</button>
+                <wc-popover target="#p6" direction="left">
+                    <h3>Popover left</h3>
+                    <p>Um propover directed to left</p>
+                </wc-popover>
+                <wc-popover target="#p5" direction="bottom" show-event="focus" hide-event="blur">
+                    <h3>Popover bottom</h3>
+                    <p>Um propover directed to bottom</p>
+                </wc-popover>
+            </div>
+        </section>
+        <section>
+            <h2 id="tabpanel-section">Tab panel</h2>
+            <div class="line">
+                <wc-tabpanel>
+                    <wc-tabnav>
+                        <a href="#tab1" active>Tab 1</a>
+                        <a href="#tab2">Tab 2</a>
+                        <a href="#tab3">Tab 3</a>
+                        <a href="#tab4">Tab 4</a>
+                    </wc-tabnav>
+                    <wc-tabcontent>
+                        <section id="tab1">
+                            <h3>Tab 1</h3>
+                            <p>Content of tab panel</p>
+                        </section>
+                        <section id="tab2">
+                            <h3>Tab 2</h3>
+                            <p>Content of tab panel</p>
+                        </section>
+                        <section id="tab3">
+                            <h3>Tab 3</h3>
+                            <p>Content of tab panel</p>
+                        </section>
+                        <section id="tab4">
+                            <h3>Tab 4</h3>
+                            <p>Content of tab panel</p>
+                        </section>
+                    </wc-tabcontent>
+                </wc-tabpanel>
+            </div>
+        </section>
+        <section>
+            <h2 id="tooltip-section">Tooltip</h2>
+            <div class="line">
+                <wc-tooltip direction="top" title="Tooltip top"><a href="javascript:;">Tootip top</a></wc-tooltip> |
+                <wc-tooltip direction="right" title="Tooltip right"><a href="javascript:;">Tootip right</a></wc-tooltip> |
+                <wc-tooltip direction="left" title="Tooltip left"><a href="javascript:;">Tootip left</a></wc-tooltip> |
+                <wc-tooltip direction="bottom" title="Tooltip bottom"><a href="javascript:;">Tootip bottom</a></wc-tooltip>
+            </div>
+            <div class="line">
+                <wc-tooltip direction="top" title="Tooltip top"><input type="text" placeholder="Input" /></wc-tooltip>
+                <wc-tooltip direction="right" title="Tooltip right"><button>Button</button></wc-tooltip>
+            </div>
+        </section>
     </main>
     <wc-modal id="m1" has-backdrop allow-scroll>
         <header>
@@ -181,22 +301,24 @@
             <p>Modal example</p>
         </main>
         <footer>
-            <button class="btn btn-confirm" type="button">Confirmar</button>
-            <button class="btn btn-cancel" type="button" close-modal>Cancelar</button>
+            <button class="btn btn-confirm" type="button">Confirm</button>
+            <button class="btn btn-cancel" type="button" close-modal>Cancel</button>
         </footer>
     </wc-modal>
 
     <script>
         window.addEventListener('load', function () {
-            if (window.location.hash){
+            if (window.location.hash) {
                 let modal = document.querySelector(`wc-modal[id=${window.location.hash.substring(1)}]`);
-                if(modal) modal.isOpen = true;
+                if (modal) {
+                    modal.addEventListener('closed', () => window.location.hash = '');
+                    modal.isOpen = true;
+                }
             }
 
             document.querySelectorAll('.open-modal').forEach(e =>
                 e.addEventListener('click', function () {
                     let modal = document.querySelector(`wc-modal[id=${e.hash.substring(1)}]`);
-                    modal.addEventListener('closed', () => window.location.hash = '');
                     modal.isOpen = true;
                 }));
 

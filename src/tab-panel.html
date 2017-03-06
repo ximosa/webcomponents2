@@ -4,7 +4,7 @@
 <template>
     <style>
         :host {
-            /*position: relative;*/
+            position: relative;
         }
     </style>
     <slot></slot>
@@ -26,7 +26,6 @@
             super.connectedCallback();
             let self = this;
         }
-
     }
 
     // Register custom element definition using standard platform API
@@ -64,7 +63,6 @@
     class WcTabNav extends Polymer.Element {
         static get is() { return 'wc-tabnav'; }
 
-
         static get config() {
             return {
                 properties: {
@@ -77,11 +75,14 @@
             let self = this;
             this.querySelectorAll('a').forEach(e => {
                 e.addEventListener('click', function() {
+                    let parent = self.parentElement;
                     let old = self.querySelector('[active]');
-                    if(old) old.removeAttribute('active');
-                    
-                    this.setAttribute('active', true);
-                    self.nextElementSibling.active = this.hash;
+                    if(old) {
+                        parent.querySelector(old.hash).style.display = 'none';
+                        old.removeAttribute('active');
+                    }
+                    parent.querySelector(e.hash).style.display = 'block';
+                    e.setAttribute('active', true);
                 });
             });
         }
@@ -99,27 +100,6 @@
         :host {
             display: block;
         }
-
-        ::slotted(section) {
-            opacity: 0;
-            height: 0;
-            width: 0;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        ::slotted(section.active) {
-            opacity: 1;
-            height: auto;
-            width: 100%;
-            z-index: 1;
-            pointer-events: auto;
-        }
-
-        ::slotted(section.fade.active) {
-            opacity: 1;
-            transition: opacity .4s ease-out;
-        }
     </style>
     <slot></slot>
 </template>
@@ -131,24 +111,17 @@
         static get config() {
             return {
                 properties: {
-                    active: {
-                        type: String,
-                        observer: "_activeChanged"
-                    }
                 }
             };
         }
 
-        _activeChanged(active) {
-            let old = this.querySelector('.active');
-            if(old) old.classList.remove('active');
-            this.querySelector(active).classList.add('active');
-        }
         connectedCallback() {
-            super.connectedCallback();
             let self = this;
-            let activated = this.previousElementSibling.querySelector('[active]');
-            if(activated) this.active = activated.hash;
+            super.connectedCallback();
+            this.querySelectorAll('section').forEach(e => e.style.display = 'none');
+            let parent = self.parentElement;
+            let active = parent.querySelector('[active]');
+            if(active) parent.querySelector(active.hash).style.display = 'block';
         }
 
     }
