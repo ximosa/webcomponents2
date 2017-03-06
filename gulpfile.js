@@ -47,7 +47,7 @@ gulp.task('bower-register', ['minify', 'create-all'], function (cb) {
         }))
         .pipe(gulp.dest('./'))
 
-    exec('bower register webcompoennst2 https://github.com/michael-silva/webcomponents2.git', function (err, stdout, stderr) {
+    exec('bower register webcomponents2 https://github.com/michael-silva/webcomponents2.git', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
         cb(err);
