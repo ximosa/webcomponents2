@@ -27,17 +27,10 @@ gulp.task('create-all', ['minify'], function () {
 
 
 // Task to publish
-gulp.task('publish', function (cb) {
-    exec('git status --porcelain && git log --branches --not --remotes --simplify-by-decoration --decorate --oneline', function (err, stdout, stderr) {
-        if(stdout) console.log('You\'ve pending changes to commit or to push and the bower package can\'t be registered');
-        else gulp.start('bower-register');
-        
-        cb(err);
-    });
-}); 
+gulp.task('publish', ['prepare-publish', 'git-push-commit', 'bower-register']); 
 
-gulp.task('bower-register', ['minify', 'create-all'], function (cb) {
-    gulp.src('bower.json')
+gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
+    return gulp.src('bower.json')
         .pipe(jeditor(function(json) {
             var nums = json.version.split('.').map(n => +n);
             nums[nums.length - 1]++;
@@ -46,10 +39,22 @@ gulp.task('bower-register', ['minify', 'create-all'], function (cb) {
             return json;
         }))
         .pipe(gulp.dest('./'))
+});
 
+
+gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
+    exec('git add --all && git commit -m "updating bower version" && git push origin master', function (err, stdout, stderr) {
+        console.log(stdout);
+        if(stderr) throw stderr;
+        cb(err);
+    });
+});
+
+
+gulp.task('bower-register', ['git-push-commit'], function (cb) {
     exec('bower register webcomponents2 https://github.com/michael-silva/webcomponents2.git', function (err, stdout, stderr) {
         console.log(stdout);
-        console.log(stderr);
+        if(stderr) throw stderr;
         cb(err);
     });
 });
