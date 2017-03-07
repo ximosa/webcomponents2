@@ -45,7 +45,7 @@ gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
 gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
     exec('git add --all && git commit -m "updating bower version" && git push origin master', function (err, stdout, stderr) {
         console.log(stdout);
-        if(stderr) throw stderr;
+        console.log(stderr);
         cb(err);
     });
 });
