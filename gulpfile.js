@@ -27,11 +27,11 @@ gulp.task('create-all', ['minify'], function () {
 
 
 // Task to publish
-gulp.task('publish', ['prepare-publish', 'git-push-commit']); 
+gulp.task('publish', ['prepare-publish', 'git-push-commit']);
 
 gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
     return gulp.src('bower.json')
-        .pipe(jeditor(function(json) {
+        .pipe(jeditor(function (json) {
             var nums = json.version.split('.').map(n => +n);
             nums[nums.length - 1]++;
             json.version = nums.join('.');
@@ -43,7 +43,7 @@ gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
 
 gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
     gulp.src('bower.json')
-        .pipe(jeditor(function(json) {
+        .pipe(jeditor(function (json) {
             exec(`git add --all && git commit -am "updating bower version" && git tag -a v${json.version} -m "Release version ${json.version}" && git push origin master --tag`, function (err, stdout, stderr) {
                 console.log(stdout);
                 console.log(stderr);
