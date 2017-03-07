@@ -27,9 +27,9 @@ gulp.task('create-all', ['minify'], function () {
 
 
 // Task to publish
-gulp.task('publish', ['prepare-publish', 'git-push-commit']);
+gulp.task('publish', ['git-push-commit']);
 
-gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
+gulp.task('update-bower-version', ['minify', 'create-all'], function (cb) {
     return gulp.src('bower.json')
         .pipe(jeditor(function (json) {
             var nums = json.version.split('.').map(n => +n);
@@ -40,8 +40,19 @@ gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
         .pipe(gulp.dest('./'));
 });
 
+gulp.task('update-package-version', ['minify', 'create-all'], function (cb) {
+    return gulp.src('package.json')
+        .pipe(jeditor(function (json) {
+            var nums = json.version.split('.').map(n => +n);
+            nums[nums.length - 1]++;
+            json.version = nums.join('.');
+            return json;
+        }))
+        .pipe(gulp.dest('./'));
+});
 
-gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
+
+gulp.task('git-push-commit', ['update-package-version', 'update-bower-version'], function (cb) {
     gulp.src('bower.json')
         .pipe(jeditor(function (json) {
             exec(`git add --all && git commit -am "updating bower version" && git tag -a v${json.version} -m "Release version ${json.version}" && git push origin master --tag`, function (err, stdout, stderr) {
