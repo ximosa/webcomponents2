@@ -42,12 +42,13 @@ gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
 
 
 gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
-    return gulp.src('bower.json')
+    gulp.src('bower.json')
         .pipe(jeditor(function(json) {
             exec(`git add --all && git commit -am "updating bower version" && git tag -a v${json.version} -m "Release version ${json.version}" && git push origin master --tag`, function (err, stdout, stderr) {
                 console.log(stdout);
                 console.log(stderr);
                 cb(err);
             });
+            return json;
         }));
 });
