@@ -27,23 +27,27 @@ gulp.task('create-all', ['minify'], function () {
 
 
 // Task to publish
-gulp.task('publish', ['prepare-publish']); 
+gulp.task('publish', ['prepare-publish', 'git-push-commit']); 
 
 gulp.task('prepare-publish', ['minify', 'create-all'], function (cb) {
-    var version = "0.0.0";
-    gulp.src('bower.json')
+    return gulp.src('bower.json')
         .pipe(jeditor(function(json) {
             var nums = json.version.split('.').map(n => +n);
             nums[nums.length - 1]++;
-            version = json.version = nums.join('.');
+            json.version = nums.join('.');
             return json;
         }))
         .pipe(gulp.dest('./'));
-        
-        console.log(version);
-        exec(`git add --all && git commit -am "updating bower version" && git tag -a v${version} -m "Release version ${version}" && git push origin master --tag`, function (err, stdout, stderr) {
-            console.log(stdout);
-            console.log(stderr);
-            cb(err);
-        });
+});
+
+
+gulp.task('git-push-commit', ['prepare-publish'], function (cb) {
+    return gulp.src('bower.json')
+        .pipe(jeditor(function(json) {
+            exec(`git add --all && git commit -am "updating bower version" && git tag -a v${json.version} -m "Release version ${json.version}" && git push origin master --tag`, function (err, stdout, stderr) {
+                console.log(stdout);
+                console.log(stderr);
+                cb(err);
+            });
+        }));
 });
